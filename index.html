@@ -19,7 +19,7 @@
         aside { min-width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
         .brand { padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-panel); z-index: 10; }
         .nav-links { list-style: none; padding: 10px 0; }
-        .nav-group { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; padding: 10px 20px 5px; font-weight: bold; letter-spacing: 1px; }
+        .nav-group { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; padding: 15px 20px 5px; font-weight: bold; letter-spacing: 1px; }
         .nav-links li { padding: 10px 20px; cursor: pointer; transition: background 0.2s; color: var(--text-muted); border-left: 3px solid transparent; font-size: 0.95rem; }
         .nav-links li:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text-main); }
         .nav-links li.active { background-color: rgba(187, 134, 252, 0.1); color: var(--accent); border-left: 3px solid var(--accent); }
@@ -53,13 +53,13 @@
         .result-box span { font-weight: bold; color: var(--accent); }
 
         /* Specific Tools */
-        input[type="color"] { width: 45px; height: 45px; border: none; border-radius: 8px; cursor: pointer; background: none; }
+        input[type="color"] { width: 45px; height: 45px; border: none; border-radius: 8px; cursor: pointer; background: none; padding: 0; }
         .palette-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
         .color-swatch { border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; }
         .color-swatch:hover { transform: translateY(-5px); }
         .color-fill { height: 80px; width: 100%; display: flex; align-items: flex-end; padding: 10px; }
         .color-info { background: var(--bg-panel); padding: 10px; text-align: center; font-size: 0.85rem; }
-        .two-col { display: flex; gap: 20px; } .col { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .two-col { display: flex; gap: 20px; flex-wrap: wrap; } .col { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 300px; }
         
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table th, .data-table td { padding: 10px; border: 1px solid var(--border); text-align: left; }
@@ -67,6 +67,10 @@
         .table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
 
         canvas.easing-canvas { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 400px; height: 250px; display: block; margin-bottom: 15px; }
+        
+        /* Pixel Editor */
+        #pixel-canvas { background-color: #fff; border: 2px solid var(--border); cursor: crosshair; image-rendering: pixelated; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .pixel-controls { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; background: var(--bg-panel); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
 
         .copy-toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; padding: 10px 20px; border-radius: 4px; font-weight: bold; display: none; opacity: 0; transition: opacity 0.3s; z-index: 999; }
     </style>
@@ -76,18 +80,22 @@
     <aside>
         <div class="brand">DevTools AIO</div>
         <ul class="nav-links" id="nav-links">
-            <div class="nav-group">App & Text Utils</div>
+            <div class="nav-group">App & Data Utils</div>
             <li class="active" onclick="switchTool('color-generator', this)">Material Palette</li>
             <li onclick="switchTool('json-formatter', this)">JSON Formatter</li>
             <li onclick="switchTool('base64-tool', this)">Base64 Encoder</li>
+            <li onclick="switchTool('uuid-gen', this)">UUID / GUID Generator</li>
             
-            <div class="nav-group">Game Economy</div>
+            <div class="nav-group">Game Content & Logic</div>
+            <li onclick="switchTool('dialogue-json', this)">Dialogue to JSON</li>
+            <li onclick="switchTool('name-gen', this)">Random Name Gen</li>
             <li onclick="switchTool('gacha-sim', this)">Gacha Simulator</li>
             <li onclick="switchTool('economy-scaler', this)">Economy Scaler</li>
             <li onclick="switchTool('resource-tracker', this)">Resource Tracker</li>
             <li onclick="switchTool('diminishing-calc', this)">Diminishing Stats</li>
             
             <div class="nav-group">2D & Animation</div>
+            <li onclick="switchTool('pixel-maker', this)">Simple Pixel Maker</li>
             <li onclick="switchTool('sprite-calc', this)">Sprite Sheet Calc</li>
             <li onclick="switchTool('easing-vis', this)">Easing Visualizer</li>
         </ul>
@@ -135,7 +143,49 @@
             <div id="b64-status" style="margin-top: 10px; font-size: 0.9rem;"></div>
         </div>
 
-        <!-- TOOL 4: GACHA -->
+        <!-- TOOL 4: UUID GENERATOR -->
+        <div id="uuid-gen" class="tool-section">
+            <h2>UUID / GUID Generator (v4)</h2>
+            <div class="control-group">
+                <div class="input-group"><label>Jumlah UUID</label><input type="number" id="uuid-count" value="5" min="1" max="100"></div>
+                <button class="primary" onclick="generateUUIDs()">Generate UUIDs</button>
+            </div>
+            <textarea id="uuid-output" readonly placeholder="Hasil UUID akan muncul di sini..."></textarea>
+        </div>
+
+        <!-- TOOL 5: DIALOGUE TO JSON -->
+        <div id="dialogue-json" class="tool-section">
+            <h2>Dialogue to JSON Converter</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Ketik percakapan dengan format <code>NamaKarakter: Teks percakapan</code> untuk mengubahnya jadi array JSON.</p>
+            <div class="two-col">
+                <div class="col">
+                    <textarea id="dlg-input" placeholder="Pip: Halo semuanya!&#10;Fixer: Ayo kita bangun markas.&#10;Pip: Siap!"></textarea>
+                    <button class="primary" onclick="convertDialogue()">Convert to JSON &rarr;</button>
+                </div>
+                <div class="col">
+                    <textarea id="dlg-output" readonly placeholder="Output JSON..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOOL 6: RANDOM NAME GEN -->
+        <div id="name-gen" class="tool-section">
+            <h2>Random Name Generator</h2>
+            <div class="control-group">
+                <div class="input-group">
+                    <label>Tema Nama</label>
+                    <select id="name-theme">
+                        <option value="cute">Cute / Fantasy (Wandering Pip)</option>
+                        <option value="survival">Modern / Survival</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Jumlah</label><input type="number" id="name-count" value="10" min="1" max="50"></div>
+                <button class="primary" onclick="generateNames()">Generate Names</button>
+            </div>
+            <textarea id="name-output" readonly placeholder="Hasil nama..."></textarea>
+        </div>
+
+        <!-- TOOL 7: GACHA -->
         <div id="gacha-sim" class="tool-section">
             <h2>Loot Drop & Gacha Simulator</h2>
             <div class="control-group">
@@ -146,7 +196,7 @@
             <div class="result-box" id="gacha-result">Peluang minimal 1 item: <span>--%</span></div>
         </div>
 
-        <!-- TOOL 5: ECONOMY SCALER -->
+        <!-- TOOL 8: ECONOMY SCALER -->
         <div id="economy-scaler" class="tool-section">
             <h2>Game Economy Scaler</h2>
             <div class="control-group">
@@ -160,7 +210,7 @@
             </div>
         </div>
 
-        <!-- TOOL 6: RESOURCE TRACKER -->
+        <!-- TOOL 9: RESOURCE TRACKER -->
         <div id="resource-tracker" class="tool-section">
             <h2>Resource Tracker (Survival Base)</h2>
             <div class="control-group">
@@ -172,14 +222,13 @@
             <div class="result-box" id="res-result">Status Produksi:<br>Netto per Menit: <span>--</span></div>
         </div>
 
-        <!-- TOOL 7: DIMINISHING STATS -->
+        <!-- TOOL 10: DIMINISHING STATS -->
         <div id="diminishing-calc" class="tool-section">
             <h2>Stat Diminishing Returns (Armor/Defense)</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Simulasi rumus <code>Reduksi = Armor / (Armor + Konstanta)</code> untuk mencegah stats karakter over-powered di late game.</p>
             <div class="control-group">
-                <div class="input-group"><label>Konstanta Game</label><input type="number" id="dim-const" value="100" title="Semakin besar konstanta, semakin sulit mendapat reduksi tinggi"></div>
-                <div class="input-group"><label>Max Armor Dites</label><input type="number" id="dim-max" value="500" step="50"></div>
-                <div class="input-group"><label>Step (Kenaikan)</label><input type="number" id="dim-step" value="50"></div>
+                <div class="input-group"><label>Konstanta Game</label><input type="number" id="dim-const" value="100"></div>
+                <div class="input-group"><label>Max Armor</label><input type="number" id="dim-max" value="500" step="50"></div>
+                <div class="input-group"><label>Step Kenaikan</label><input type="number" id="dim-step" value="50"></div>
                 <button class="primary" onclick="calcDiminishing()">Simulasikan</button>
             </div>
             <div class="table-container">
@@ -187,49 +236,57 @@
             </div>
         </div>
 
-        <!-- TOOL 8: SPRITE SHEET CALC -->
-        <div id="sprite-calc" class="tool-section">
-            <h2>Sprite Sheet & Tile Calculator</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Hitung jumlah frame kolom dan baris dari gambar spritesheet utuh.</p>
-            <div class="control-group">
-                <div class="input-group"><label>Lebar Total Gambar (px)</label><input type="number" id="spr-w" value="1024"></div>
-                <div class="input-group"><label>Tinggi Total Gambar (px)</label><input type="number" id="spr-h" value="1024"></div>
-                <div class="input-group"><label>Lebar per Tile (px)</label><input type="number" id="spr-tw" value="64"></div>
-                <div class="input-group"><label>Tinggi per Tile (px)</label><input type="number" id="spr-th" value="64"></div>
-                <button class="primary" onclick="calcSprite()">Hitung Frame</button>
+        <!-- TOOL 11: PIXEL MAKER -->
+        <div id="pixel-maker" class="tool-section">
+            <h2>Simple Pixel Maker (32x32 Grid)</h2>
+            <p style="color: var(--text-muted); margin-bottom: 10px;">Corat-coret ide sprite/icon di sini. Klik dan drag untuk menggambar.</p>
+            <div class="pixel-controls">
+                <div class="input-group">
+                    <label>Warna Brush</label>
+                    <input type="color" id="px-color" value="#000000" style="width: 40px; height: 40px; background: none; border: 1px solid var(--border);">
+                </div>
+                <button onclick="pxSetBrush()">Brush</button>
+                <button onclick="pxSetEraser()">Eraser</button>
+                <button onclick="pxClear()">Clear Canvas</button>
+                <button class="primary" onclick="pxExport()">Download PNG</button>
             </div>
-            <div class="result-box" id="spr-result">
-                Kolom (Horizontal): <span>--</span><br>
-                Baris (Vertikal): <span>--</span><br>
-                Total Frame: <span>--</span>
-            </div>
+            <canvas id="pixel-canvas" width="320" height="320"></canvas>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">*Resolusi ekspor murni 32x32 pixel.</p>
         </div>
 
-        <!-- TOOL 9: EASING VISUALIZER -->
+        <!-- TOOL 12: SPRITE CALCULATOR -->
+        <div id="sprite-calc" class="tool-section">
+            <h2>Sprite Sheet Calculator</h2>
+            <div class="control-group">
+                <div class="input-group"><label>Total Lebar (px)</label><input type="number" id="spr-w" value="1024"></div>
+                <div class="input-group"><label>Total Tinggi (px)</label><input type="number" id="spr-h" value="1024"></div>
+                <div class="input-group"><label>Tile Lebar (px)</label><input type="number" id="spr-tw" value="64"></div>
+                <div class="input-group"><label>Tile Tinggi (px)</label><input type="number" id="spr-th" value="64"></div>
+                <button class="primary" onclick="calcSprite()">Hitung Frame</button>
+            </div>
+            <div class="result-box" id="spr-result">Kolom: <span>--</span><br>Baris: <span>--</span><br>Total Frame: <span>--</span></div>
+        </div>
+
+        <!-- TOOL 13: EASING VISUALIZER -->
         <div id="easing-vis" class="tool-section">
-            <h2>Easing & Tweening Visualizer</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Visualisasi kurva animasi matematika (Lerp) agar pergerakan UI / 3D Object terasa "lucu" dan tidak kaku.</p>
+            <h2>Easing Visualizer</h2>
             <div class="control-group">
                 <div class="input-group">
                     <label>Fungsi Easing</label>
                     <select id="ease-type" onchange="drawEasing()">
-                        <option value="linear">Linear (Kaku)</option>
-                        <option value="easeInQuad">Ease In Quad (Mulai Lambat)</option>
-                        <option value="easeOutQuad">Ease Out Quad (Berhenti Lambat)</option>
-                        <option value="easeOutBounce" selected>Ease Out Bounce (Lucu/Bouncy)</option>
-                        <option value="easeOutElastic">Ease Out Elastic (Karet)</option>
+                        <option value="linear">Linear</option>
+                        <option value="easeOutBounce" selected>Ease Out Bounce</option>
+                        <option value="easeOutElastic">Ease Out Elastic</option>
+                        <option value="easeOutQuad">Ease Out Quad</option>
                     </select>
                 </div>
                 <button class="primary" onclick="animateEasing()">Play Animasi</button>
             </div>
-            
             <div class="two-col">
-                <div class="col">
-                    <canvas id="ease-canvas" class="easing-canvas" width="400" height="250"></canvas>
-                </div>
+                <div class="col"><canvas id="ease-canvas" class="easing-canvas" width="400" height="250"></canvas></div>
                 <div class="col">
                     <div class="result-box" style="height: 100%;">
-                        <label style="font-size: 0.85rem; color: var(--text-muted);">Preview Gerakan:</label>
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Preview:</label>
                         <div style="position: relative; width: 100%; height: 50px; background: var(--bg-dark); border-radius: 25px; margin-top: 15px; border: 1px solid var(--border); overflow: hidden;">
                             <div id="ease-ball" style="position: absolute; top: 5px; left: 5px; width: 40px; height: 40px; background: var(--accent); border-radius: 50%;"></div>
                         </div>
@@ -250,14 +307,15 @@
             document.getElementById(toolId).classList.add('active');
             navElement.classList.add('active');
             if(toolId === 'easing-vis') drawEasing();
+            if(toolId === 'pixel-maker') drawPxGrid();
         }
         function showToast(text) {
-            const t = document.getElementById('toast'); t.innerText = `${text} Copied!`;
+            const t = document.getElementById('toast'); t.innerText = text;
             t.style.display = 'block'; void t.offsetWidth; t.style.opacity = '1';
             setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.style.display = 'none', 300); }, 2000);
         }
 
-        // --- TOOL 1: COLOR ---
+        // --- COLOR ---
         function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let cn=Math.min(r,g,b),cx=Math.max(r,g,b),d=cx-cn,h=0,s=0,l=(cx+cn)/2;if(d==0)h=0;else if(cx==r)h=((g-b)/d)%6;else if(cx==g)h=(b-r)/d+2;else h=(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360;s=d==0?0:d/(1-Math.abs(2*l-1));return[h,+(s*100).toFixed(1),+(l*100).toFixed(1)];}
         function hslToHex(h,s,l){s/=100;l/=100;let c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;if(h<60){r=c;g=x;b=0;}else if(h<120){r=x;g=c;b=0;}else if(h<180){r=0;g=c;b=x;}else if(h<240){r=0;g=x;b=c;}else if(h<300){r=x;g=0;b=c;}else{r=c;g=0;b=x;}r=Math.round((r+m)*255).toString(16).padStart(2,'0');g=Math.round((g+m)*255).toString(16).padStart(2,'0');b=Math.round((b+m)*255).toString(16).padStart(2,'0');return `#${r}${g}${b}`;}
         function generatePalette() {
@@ -268,7 +326,7 @@
             const cnt = document.getElementById('palette-output'); cnt.innerHTML = '';
             w.forEach(i => {
                 const hex = hslToHex(h, s, i.l); const tc = i.l > 60 ? '#000' : '#fff';
-                const el = document.createElement('div'); el.className = 'color-swatch'; el.onclick = () => { navigator.clipboard.writeText(hex); showToast(hex.toUpperCase()); };
+                const el = document.createElement('div'); el.className = 'color-swatch'; el.onclick = () => { navigator.clipboard.writeText(hex); showToast("Hex Copied!"); };
                 el.innerHTML = `<div class="color-fill" style="background-color:${hex};color:${tc}"><span style="font-weight:bold;">${i.w}</span></div><div class="color-info"><div class="color-hex">${hex.toUpperCase()}</div></div>`;
                 cnt.appendChild(el);
             });
@@ -276,118 +334,141 @@
         document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value);
         document.getElementById('hex-input').addEventListener('input', (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('base-color').value = e.target.value; });
 
-        // --- TOOL 2 & 3: JSON & B64 ---
+        // --- JSON, B64, UUID, DIALOGUE, NAME ---
         function formatJSON(s) { const i=document.getElementById('json-input'), st=document.getElementById('json-status'); try { i.value = JSON.stringify(JSON.parse(i.value), null, s); st.innerHTML='<span style="color:var(--success)">Valid JSON!</span>'; } catch(e) { st.innerHTML=`<span style="color:var(--error)">Error: ${e.message}</span>`; } }
         function clearJSON() { document.getElementById('json-input').value=''; document.getElementById('json-status').innerHTML=''; }
         function handleBase64(a) { const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'), st=document.getElementById('b64-status'); try { if(a==='encode'){ r.value=btoa(unescape(encodeURIComponent(t.value))); st.innerHTML='<span style="color:var(--success)">Encoded!</span>';} else { t.value=decodeURIComponent(escape(atob(r.value))); st.innerHTML='<span style="color:var(--success)">Decoded!</span>'; } } catch(e) { st.innerHTML=`<span style="color:var(--error)">Format Error!</span>`; } }
+        
+        function generateUUIDs() {
+            const count = parseInt(document.getElementById('uuid-count').value) || 1;
+            let result = [];
+            for(let i=0; i<count; i++) {
+                result.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                }));
+            }
+            document.getElementById('uuid-output').value = result.join('\n');
+            navigator.clipboard.writeText(result.join('\n')); showToast("UUIDs Copied!");
+        }
 
-        // --- TOOL 4, 5, 6: SIMULATORS ---
+        function convertDialogue() {
+            const lines = document.getElementById('dlg-input').value.split('\n');
+            let json = [];
+            lines.forEach(line => {
+                if(line.trim() === '') return;
+                const parts = line.split(':');
+                if(parts.length >= 2) {
+                    json.push({ character: parts[0].trim(), text: parts.slice(1).join(':').trim() });
+                } else {
+                    json.push({ character: "Unknown", text: line.trim() });
+                }
+            });
+            document.getElementById('dlg-output').value = JSON.stringify(json, null, 2);
+        }
+
+        function generateNames() {
+            const type = document.getElementById('name-theme').value;
+            const count = parseInt(document.getElementById('name-count').value) || 1;
+            const cutePrefix = ["Po", "Pi", "Lu", "Mo", "Ki", "Chu", "Ma", "Bloop"];
+            const cuteSuffix = ["chi", "pip", "lu", "ko", "mi", "ya", "rin", "by"];
+            const survPrefix = ["Scrap", "Rust", "Dust", "Grit", "Iron", "Ash", "Cole", "Flint"];
+            const survSuffix = ["er", "son", "man", "ton", "wood", "yard", "ward", "smith"];
+            
+            let res = [];
+            for(let i=0; i<count; i++) {
+                let p = type === 'cute' ? cutePrefix : survPrefix;
+                let s = type === 'cute' ? cuteSuffix : survSuffix;
+                let name = p[Math.floor(Math.random()*p.length)] + s[Math.floor(Math.random()*s.length)];
+                res.push(name);
+            }
+            document.getElementById('name-output').value = res.join('\n');
+        }
+
+        // --- SIMULATORS ---
         function calcGacha() { const r = parseFloat(document.getElementById('gacha-rate').value)/100, p = parseInt(document.getElementById('gacha-pulls').value); if(isNaN(r)||isNaN(p)||p<1) return; const prob = (1-Math.pow(1-r,p))*100; document.getElementById('gacha-result').innerHTML = `Peluang mendapatkan minimal 1 item:<br><br> <span style="font-size: 2rem; color: ${prob<30?'var(--error)':prob>80?'var(--success)':'var(--accent)'};">${prob.toFixed(2)}%</span>`; }
         function calcEconomy() { const b=parseFloat(document.getElementById('eco-base').value), m=parseFloat(document.getElementById('eco-multi').value), mx=parseInt(document.getElementById('eco-max').value), tb=document.querySelector('#eco-table tbody'); tb.innerHTML=''; for(let i=1;i<=mx;i++){ const v=b*Math.pow(m,i-1); tb.innerHTML+=`<tr><td>Lv ${i}</td><td><b>${Math.round(v).toLocaleString()}</b></td><td style="color:var(--text-muted)">${v.toFixed(2)}</td></tr>`; } }
-        function calcResource() { const p=parseFloat(document.getElementById('res-prod').value), c=parseFloat(document.getElementById('res-cons').value), pn=parseFloat(document.getElementById('res-penalty').value)/100; const tc=c+(c*pn), nm=p-tc; const col=nm>=0?'var(--success)':'var(--error)'; document.getElementById('res-result').innerHTML = `Status Produksi: <span style="color:${col}">${nm>=0?'Surplus':'Defisit'}</span><br><br>Total Konsumsi (Penalti): ${tc.toFixed(1)} / mnt<br>Netto per Menit: <span style="color:${col}">${nm>0?'+'+nm.toFixed(1):nm.toFixed(1)}</span><br>Netto per Jam: <span style="color:${col}">${nm*60>0?'+'+(nm*60).toFixed(1):(nm*60).toFixed(1)}</span>`; }
+        function calcResource() { const p=parseFloat(document.getElementById('res-prod').value), c=parseFloat(document.getElementById('res-cons').value), pn=parseFloat(document.getElementById('res-penalty').value)/100; const tc=c+(c*pn), nm=p-tc; const col=nm>=0?'var(--success)':'var(--error)'; document.getElementById('res-result').innerHTML = `Status Produksi: <span style="color:${col}">${nm>=0?'Surplus':'Defisit'}</span><br><br>Total Konsumsi (Penalti): ${tc.toFixed(1)} / mnt<br>Netto per Menit: <span style="color:${col}">${nm>0?'+'+nm.toFixed(1):nm.toFixed(1)}</span>`; }
+        function calcDiminishing() { const k=parseFloat(document.getElementById('dim-const').value), mx=parseFloat(document.getElementById('dim-max').value), st=parseFloat(document.getElementById('dim-step').value), tb=document.querySelector('#dim-table tbody'); tb.innerHTML=''; for(let a=st;a<=mx;a+=st){ const r=(a/(a+k))*100, d=100-r; tb.innerHTML+=`<tr><td><b>${a}</b></td><td style="color:var(--success)">${r.toFixed(2)}%</td><td style="color:var(--error)">${d.toFixed(2)}%</td></tr>`; } }
+        function calcSprite() { const w=parseInt(document.getElementById('spr-w').value), h=parseInt(document.getElementById('spr-h').value), tw=parseInt(document.getElementById('spr-tw').value), th=parseInt(document.getElementById('spr-th').value); if(!w||!h||!tw||!th) return; const c=w/tw, r=h/th; document.getElementById('spr-result').innerHTML=`Kolom: <span>${c}</span><br>Baris: <span>${r}</span><br>Total Frame: <span>${c*r}</span>`+(!Number.isInteger(c)||!Number.isInteger(r)?'<br><span style="color:var(--error);font-size:0.9rem;">Sisa pixel terdeteksi!</span>':''); }
 
-        // --- TOOL 7: DIMINISHING STATS ---
-        function calcDiminishing() {
-            const k = parseFloat(document.getElementById('dim-const').value);
-            const max = parseFloat(document.getElementById('dim-max').value);
-            const step = parseFloat(document.getElementById('dim-step').value);
-            const tb = document.querySelector('#dim-table tbody');
-            tb.innerHTML = '';
-            
-            for(let a = step; a <= max; a += step) {
-                const reduction = (a / (a + k)) * 100;
-                const damageTaken = 100 - reduction;
-                tb.innerHTML += `<tr>
-                    <td><b>${a}</b></td>
-                    <td style="color: var(--success)">${reduction.toFixed(2)}%</td>
-                    <td style="color: var(--error)">${damageTaken.toFixed(2)}%</td>
-                </tr>`;
+        // --- EASING ---
+        const easeFuncs = { linear: t=>t, easeOutQuad: t=>t*(2-t), easeOutBounce: t=>{const n=7.5625,d=2.75;if(t<1/d)return n*t*t;if(t<2/d)return n*(t-=1.5/d)*t+.75;if(t<2.5/d)return n*(t-=2.25/d)*t+.9375;return n*(t-=2.625/d)*t+.984375;}, easeOutElastic: t=>{const c4=(2*Math.PI)/3;return t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1;} };
+        function drawEasing() { const cv=document.getElementById('ease-canvas'); if(!cv.getContext)return; const ctx=cv.getContext('2d'), fn=easeFuncs[document.getElementById('ease-type').value]; ctx.clearRect(0,0,cv.width,cv.height); ctx.strokeStyle='#333'; ctx.lineWidth=1; ctx.beginPath(); for(let i=0;i<=10;i++){ let x=i*(cv.width/10), y=i*(cv.height/10); ctx.moveTo(x,0); ctx.lineTo(x,cv.height); ctx.moveTo(0,y); ctx.lineTo(cv.width,y); } ctx.stroke(); ctx.strokeStyle='#bb86fc'; ctx.lineWidth=3; ctx.beginPath(); for(let x=0;x<=cv.width;x++){ let t=x/cv.width, y=cv.height-(fn(t)*(cv.height-40))-20; if(x===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); }
+        let animId; function animateEasing() { cancelAnimationFrame(animId); const b=document.getElementById('ease-ball'), fn=easeFuncs[document.getElementById('ease-type').value], dur=1500, mx=b.parentElement.offsetWidth-b.offsetWidth-10; let st=null; function step(ts){ if(!st)st=ts; let p=(ts-st)/dur; if(p>1)p=1; b.style.transform=`translateX(${fn(p)*mx}px)`; if(p<1)animId=requestAnimationFrame(step); } animId=requestAnimationFrame(step); }
+
+        // --- PIXEL EDITOR ---
+        const pxCv = document.getElementById('pixel-canvas');
+        const pxCtx = pxCv.getContext('2d');
+        const gridSize = 32;
+        const cellSize = 320 / gridSize; // 10px per cell
+        let isDrawing = false;
+        let isEraser = false;
+        let pxData = new Array(gridSize*gridSize).fill(null);
+
+        function drawPxGrid() {
+            pxCtx.clearRect(0, 0, 320, 320);
+            pxCtx.strokeStyle = '#e0e0e0';
+            pxCtx.lineWidth = 0.5;
+            for(let i=0; i<=gridSize; i++) {
+                pxCtx.beginPath(); pxCtx.moveTo(i*cellSize, 0); pxCtx.lineTo(i*cellSize, 320); pxCtx.stroke();
+                pxCtx.beginPath(); pxCtx.moveTo(0, i*cellSize); pxCtx.lineTo(320, i*cellSize); pxCtx.stroke();
             }
+            // Redraw data
+            pxData.forEach((col, idx) => {
+                if(col) {
+                    let x = idx % gridSize, y = Math.floor(idx / gridSize);
+                    pxCtx.fillStyle = col;
+                    pxCtx.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                }
+            });
+        }
+        
+        function paintPixel(e) {
+            if(!isDrawing) return;
+            const rect = pxCv.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+            if(x < 0 || x >= gridSize || y < 0 || y >= gridSize) return;
+            const idx = y * gridSize + x;
+            
+            if(isEraser) {
+                pxData[idx] = null;
+            } else {
+                pxData[idx] = document.getElementById('px-color').value;
+            }
+            drawPxGrid();
         }
 
-        // --- TOOL 8: SPRITE CALCULATOR ---
-        function calcSprite() {
-            const w = parseInt(document.getElementById('spr-w').value);
-            const h = parseInt(document.getElementById('spr-h').value);
-            const tw = parseInt(document.getElementById('spr-tw').value);
-            const th = parseInt(document.getElementById('spr-th').value);
-            
-            if(!w || !h || !tw || !th) return;
-            const cols = w / tw;
-            const rows = h / th;
-            
-            let html = `Kolom (Horizontal): <span>${cols}</span><br>Baris (Vertikal): <span>${rows}</span><br>Total Frame: <span>${cols * rows}</span>`;
-            if(!Number.isInteger(cols) || !Number.isInteger(rows)) {
-                html += `<br><br><span style="color: var(--error); font-size:0.9rem;">Peringatan: Ada sisa pixel! Ukuran gambar tidak bisa dibagi rata dengan ukuran tile.</span>`;
-            }
-            document.getElementById('spr-result').innerHTML = html;
-        }
+        pxCv.addEventListener('mousedown', (e) => { isDrawing = true; paintPixel(e); });
+        pxCv.addEventListener('mousemove', paintPixel);
+        pxCv.addEventListener('mouseup', () => isDrawing = false);
+        pxCv.addEventListener('mouseleave', () => isDrawing = false);
 
-        // --- TOOL 9: EASING VISUALIZER ---
-        const easeFuncs = {
-            linear: t => t,
-            easeInQuad: t => t*t,
-            easeOutQuad: t => t*(2-t),
-            easeOutBounce: t => { const n=7.5625, d=2.75; if(t<1/d)return n*t*t; if(t<2/d)return n*(t-=1.5/d)*t+.75; if(t<2.5/d)return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375; },
-            easeOutElastic: t => { const c4=(2*Math.PI)/3; return t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1; }
-        };
-
-        function drawEasing() {
-            const canvas = document.getElementById('ease-canvas');
-            if(!canvas.getContext) return;
-            const ctx = canvas.getContext('2d');
-            const type = document.getElementById('ease-type').value;
-            const fn = easeFuncs[type];
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw Grid
-            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
-            ctx.beginPath();
-            for(let i=0; i<=10; i++) {
-                let x = i * (canvas.width/10); let y = i * (canvas.height/10);
-                ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
-                ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
-            }
-            ctx.stroke();
-
-            // Draw Curve
-            ctx.strokeStyle = '#bb86fc'; ctx.lineWidth = 3;
-            ctx.beginPath();
-            for(let x=0; x<=canvas.width; x++) {
-                let t = x / canvas.width;
-                // mapping output 0-1 to canvas height (inverted Y)
-                let y = canvas.height - (fn(t) * (canvas.height - 40)) - 20; 
-                if(x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-        }
-
-        let animId;
-        function animateEasing() {
-            cancelAnimationFrame(animId);
-            const ball = document.getElementById('ease-ball');
-            const type = document.getElementById('ease-type').value;
-            const fn = easeFuncs[type];
-            const duration = 1500; // 1.5 seconds
-            let start = null;
-            const maxTravel = ball.parentElement.offsetWidth - ball.offsetWidth - 10;
-
-            function step(timestamp) {
-                if (!start) start = timestamp;
-                let progress = (timestamp - start) / duration;
-                if (progress > 1) progress = 1;
-                
-                let easeVal = fn(progress);
-                ball.style.transform = `translateX(${easeVal * maxTravel}px)`;
-                
-                if (progress < 1) animId = requestAnimationFrame(step);
-            }
-            animId = requestAnimationFrame(step);
+        function pxSetBrush() { isEraser = false; pxCv.style.cursor = 'crosshair'; }
+        function pxSetEraser() { isEraser = true; pxCv.style.cursor = 'cell'; }
+        function pxClear() { pxData.fill(null); drawPxGrid(); }
+        
+        function pxExport() {
+            // Buat canvas bayangan ukuran murni 32x32
+            const expCv = document.createElement('canvas');
+            expCv.width = gridSize; expCv.height = gridSize;
+            const expCtx = expCv.getContext('2d');
+            pxData.forEach((col, idx) => {
+                if(col) {
+                    let x = idx % gridSize, y = Math.floor(idx / gridSize);
+                    expCtx.fillStyle = col;
+                    expCtx.fillRect(x, y, 1, 1);
+                }
+            });
+            const link = document.createElement('a');
+            link.download = 'sprite_32x32.png';
+            link.href = expCv.toDataURL('image/png');
+            link.click();
         }
 
         // Init
-        window.onload = () => { generatePalette(); drawEasing(); };
+        window.onload = () => { generatePalette(); drawEasing(); drawPxGrid(); };
     </script>
 </body>
 </html>
