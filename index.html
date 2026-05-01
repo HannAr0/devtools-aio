@@ -5,124 +5,264 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTools AIO</title>
     <style>
+        /* Material You - Light Theme (Green Base) */
         :root {
-            --bg-dark: #121212; --bg-panel: #1e1e1e; --bg-input: #2d2d2d;
-            --text-main: #e0e0e0; --text-muted: #a0a0a0;
-            --accent: #bb86fc; --border: #333;
-            --error: #cf6679; --success: #03dac6;
+            --md-bg: #FDFDF5;
+            --md-on-bg: #1A1C18;
+            --md-surface: #FDFDF5;
+            --md-surface-container: #ECEFE5;
+            --md-surface-container-high: #E1E4D9;
+            --md-primary: #386A20;
+            --md-on-primary: #FFFFFF;
+            --md-primary-container: #B7F397;
+            --md-on-primary-container: #042100;
+            --md-secondary-container: #D5E8CF;
+            --md-on-secondary-container: #101F0F;
+            --md-outline: #73796E;
+            --md-error: #BA1A1A;
+            --md-success: #146C2E;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        /* Material You - Dark Theme Auto Switch */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-bg: #11140E;
+                --md-on-bg: #E1E4D9;
+                --md-surface: #11140E;
+                --md-surface-container: #1D211A;
+                --md-surface-container-high: #272B24;
+                --md-primary: #9CD67D;
+                --md-on-primary: #0C3900;
+                --md-primary-container: #225000;
+                --md-on-primary-container: #B7F397;
+                --md-secondary-container: #394B34;
+                --md-on-secondary-container: #D5E8CF;
+                --md-outline: #8C9388;
+                --md-error: #FFB4AB;
+                --md-success: #65DF76;
+            }
+        }
 
-        /* Sidebar */
-        aside { min-width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-        .brand { padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-panel); z-index: 10; }
-        .nav-links { list-style: none; padding: 10px 0; }
-        .nav-group { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; padding: 15px 20px 5px; font-weight: bold; letter-spacing: 1px; }
-        .nav-links li { padding: 10px 20px; cursor: pointer; transition: background 0.2s; color: var(--text-muted); border-left: 3px solid transparent; font-size: 0.95rem; }
-        .nav-links li:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text-main); }
-        .nav-links li.active { background-color: rgba(187, 134, 252, 0.1); color: var(--accent); border-left: 3px solid var(--accent); }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background-color: var(--md-bg); 
+            color: var(--md-on-bg); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Top App Bar (Mobile Only) */
+        .top-app-bar {
+            display: none;
+            height: 64px;
+            background-color: var(--md-surface);
+            color: var(--md-on-bg);
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 50;
+        }
+        .menu-btn {
+            background: none; border: none; fill: var(--md-on-bg);
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-right: 8px;
+        }
+        .menu-btn:active { background-color: var(--md-surface-container-high); }
+        .app-title { font-size: 1.25rem; font-weight: 500; }
+
+        /* Sidebar Navigation */
+        aside { 
+            width: 280px; 
+            background-color: var(--md-surface-container); 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+        .brand { 
+            padding: 24px; font-size: 1.2rem; font-weight: bold; 
+            color: var(--md-primary); position: sticky; top: 0; 
+            background: var(--md-surface-container); z-index: 10; 
+        }
+        .nav-links { list-style: none; padding: 12px; }
+        .nav-group { 
+            font-size: 0.8rem; color: var(--md-on-surface-variant); 
+            text-transform: uppercase; padding: 16px 16px 8px; 
+            font-weight: 600; letter-spacing: 0.5px; opacity: 0.7;
+        }
+        .nav-links li { 
+            padding: 14px 16px; margin-bottom: 4px; cursor: pointer; 
+            color: var(--md-on-bg); border-radius: 100px; 
+            font-size: 0.95rem; font-weight: 500;
+            display: flex; align-items: center;
+        }
+        .nav-links li:hover { background-color: var(--md-surface-container-high); }
+        .nav-links li.active { 
+            background-color: var(--md-secondary-container); 
+            color: var(--md-on-secondary-container); 
+        }
+
+        /* Overlay for Mobile Drawer */
+        .drawer-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; transition: opacity 0.3s;
+        }
 
         /* Main Content */
-        main { flex-grow: 1; padding: 30px; overflow-y: auto; }
-        .tool-section { display: none; animation: fadeIn 0.3s ease; }
-        .tool-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        h2 { margin-bottom: 20px; font-weight: 500; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
-
-        /* Reusable UI */
-        .control-group { background: var(--bg-panel); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; align-items: flex-end; gap: 15px; flex-wrap: wrap; }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-        
-        input[type="text"], input[type="number"], select, textarea {
-            padding: 10px; background: var(--bg-input); border: 1px solid var(--border);
-            color: var(--text-main); border-radius: 4px; font-size: 0.95rem; font-family: monospace;
+        main { 
+            flex-grow: 1; padding: 32px; overflow-y: auto; 
+            position: relative; scroll-behavior: smooth;
         }
-        input[type="number"] { width: 120px; }
-        select { width: 180px; cursor: pointer; }
-        textarea { resize: vertical; min-height: 200px; width: 100%; }
-        textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); }
-
-        button { padding: 10px 20px; background-color: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-        button.primary { background-color: var(--accent); color: #000; border: none; font-weight: bold; }
-        button:hover { filter: brightness(1.2); }
-
-        .result-box { background: var(--bg-input); padding: 20px; border-radius: 8px; border: 1px solid var(--border); font-size: 1.1rem; line-height: 1.6; }
-        .result-box span { font-weight: bold; color: var(--accent); }
-
-        /* Specific Tools */
-        input[type="color"] { width: 45px; height: 45px; border: none; border-radius: 8px; cursor: pointer; background: none; padding: 0; }
-        .palette-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
-        .color-swatch { border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; }
-        .color-swatch:hover { transform: translateY(-5px); }
-        .color-fill { height: 80px; width: 100%; display: flex; align-items: flex-end; padding: 10px; }
-        .color-info { background: var(--bg-panel); padding: 10px; text-align: center; font-size: 0.85rem; }
-        .two-col { display: flex; gap: 20px; flex-wrap: wrap; } .col { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 300px; }
         
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th, .data-table td { padding: 10px; border: 1px solid var(--border); text-align: left; }
-        .data-table th { background-color: var(--bg-panel); color: var(--accent); position: sticky; top: 0;}
-        .table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
-
-        canvas.easing-canvas { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 400px; height: 250px; display: block; margin-bottom: 15px; }
+        .tool-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tool-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Pixel Editor */
-        #pixel-canvas { background-color: #fff; border: 2px solid var(--border); cursor: crosshair; image-rendering: pixelated; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        .pixel-controls { display: flex; gap: 15px; align-items: center; margin-bottom: 15px; background: var(--bg-panel); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        h2 { font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; color: var(--md-primary); }
 
-        .copy-toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; padding: 10px 20px; border-radius: 4px; font-weight: bold; display: none; opacity: 0; transition: opacity 0.3s; z-index: 999; }
+        /* Material UI Components */
+        .control-group { 
+            background: var(--md-surface-container); padding: 24px; 
+            border-radius: 24px; margin-bottom: 24px; 
+            display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; 
+        }
+        .input-group { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; min-width: 200px; }
+        .input-group label { font-size: 0.85rem; color: var(--md-on-bg); font-weight: 500; opacity: 0.8; }
+        
+        input[type="text"], input[type="number"], textarea {
+            padding: 16px; background: var(--md-surface); border: 1px solid var(--md-outline);
+            color: var(--md-on-bg); border-radius: 12px; font-size: 1rem; font-family: monospace;
+            width: 100%; transition: border 0.2s;
+        }
+        textarea { resize: vertical; min-height: 200px; }
+        textarea:focus, input:focus { outline: none; border-color: var(--md-primary); border-width: 2px; padding: 15px; }
+
+        button { 
+            padding: 12px 24px; background-color: var(--md-surface-container-high); 
+            color: var(--md-on-bg); border: none; border-radius: 100px; 
+            cursor: pointer; transition: all 0.2s; font-weight: 500; font-size: 0.95rem;
+            min-height: 48px; /* Mobile touch target */
+        }
+        button.primary { 
+            background-color: var(--md-primary); 
+            color: var(--md-on-primary); 
+        }
+        button:hover { filter: brightness(1.1); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        button:active { filter: brightness(0.9); }
+
+        /* Custom Elements */
+        input[type="color"] { width: 48px; height: 48px; border: none; border-radius: 50%; cursor: pointer; background: none; padding: 0; overflow: hidden; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+        .palette-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 16px; }
+        .color-swatch { border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .color-swatch:active { transform: scale(0.95); }
+        .color-fill { height: 80px; width: 100%; display: flex; align-items: flex-end; padding: 12px; }
+        .color-info { background: var(--md-surface-container); padding: 12px; text-align: center; font-size: 0.85rem; font-weight: 500;}
+
+        .two-col { display: flex; gap: 24px; flex-wrap: wrap; } 
+        .col { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 100%; } /* Stacked by default, unstacked in media query */
+
+        /* Pixel Editor specific */
+        .pixel-container { display: flex; flex-direction: column; align-items: center; background: var(--md-surface-container); padding: 24px; border-radius: 24px; }
+        #pixel-canvas { background-color: #fff; border: 1px solid var(--md-outline); cursor: crosshair; image-rendering: pixelated; width: 320px; max-width: 100%; border-radius: 4px; touch-action: none; }
+        .pixel-controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; width: 100%; }
+
+        .copy-toast { 
+            position: fixed; bottom: 24px; right: 24px; 
+            background: var(--md-on-bg); color: var(--md-bg); 
+            padding: 14px 24px; border-radius: 12px; font-weight: 500; 
+            display: none; opacity: 0; transition: opacity 0.3s; z-index: 999; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive Breakpoints */
+        @media (min-width: 768px) {
+            .col { min-width: calc(50% - 12px); }
+        }
+
+        @media (max-width: 767px) {
+            body { padding-top: 64px; } /* Space for App Bar */
+            .top-app-bar { display: flex; }
+            
+            aside { 
+                position: fixed; top: 0; left: 0; bottom: 0; 
+                transform: translateX(-100%); 
+                box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            }
+            aside.open { transform: translateX(0); }
+            .drawer-overlay.active { display: block; opacity: 1; }
+            
+            main { padding: 20px 16px; }
+            h2 { font-size: 1.5rem; }
+            .control-group { padding: 16px; border-radius: 20px; }
+        }
     </style>
 </head>
 <body>
 
-    <aside>
+    <!-- Mobile App Bar -->
+    <div class="top-app-bar">
+        <button class="menu-btn" onclick="toggleDrawer()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </button>
+        <div class="app-title">DevTools AIO</div>
+    </div>
+
+    <!-- Drawer Overlay -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
         <div class="brand">DevTools AIO</div>
         <ul class="nav-links" id="nav-links">
-            <div class="nav-group">App & Data Utils</div>
+            <div class="nav-group">App Utilities</div>
             <li class="active" onclick="switchTool('color-generator', this)">Material Palette</li>
             <li onclick="switchTool('json-formatter', this)">JSON Formatter</li>
             <li onclick="switchTool('base64-tool', this)">Base64 Encoder</li>
-            <li onclick="switchTool('uuid-gen', this)">UUID / GUID Generator</li>
+            <li onclick="switchTool('uuid-gen', this)">UUID Generator</li>
             
-            <div class="nav-group">Game Content & Logic</div>
+            <div class="nav-group">Game Assets & Data</div>
             <li onclick="switchTool('dialogue-json', this)">Dialogue to JSON</li>
-            <li onclick="switchTool('name-gen', this)">Random Name Gen</li>
-            <li onclick="switchTool('gacha-sim', this)">Gacha Simulator</li>
-            <li onclick="switchTool('economy-scaler', this)">Economy Scaler</li>
-            <li onclick="switchTool('resource-tracker', this)">Resource Tracker</li>
-            <li onclick="switchTool('diminishing-calc', this)">Diminishing Stats</li>
-            
-            <div class="nav-group">2D & Animation</div>
             <li onclick="switchTool('pixel-maker', this)">Simple Pixel Maker</li>
-            <li onclick="switchTool('sprite-calc', this)">Sprite Sheet Calc</li>
-            <li onclick="switchTool('easing-vis', this)">Easing Visualizer</li>
         </ul>
     </aside>
 
     <main>
-        <!-- TOOL 1: COLOR -->
+        <!-- TOOL 1: COLOR PALETTE -->
         <div id="color-generator" class="tool-section active">
             <h2>Material Tonal Palette</h2>
             <div class="control-group">
-                <input type="color" id="base-color" value="#bb86fc">
-                <input type="text" id="hex-input" value="#bb86fc" maxlength="7" style="width: 120px;">
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <input type="color" id="base-color" value="#386A20">
+                    <div class="input-group">
+                        <label>Base HEX Color</label>
+                        <input type="text" id="hex-input" value="#386A20" maxlength="7">
+                    </div>
+                </div>
                 <button class="primary" onclick="generatePalette()">Generate</button>
             </div>
             <div class="palette-grid" id="palette-output"></div>
         </div>
 
-        <!-- TOOL 2: JSON -->
+        <!-- TOOL 2: JSON FORMATTER -->
         <div id="json-formatter" class="tool-section">
             <h2>JSON Formatter & Validator</h2>
-            <div class="control-group" style="margin-bottom: 10px;">
-                <button class="primary" onclick="formatJSON(4)">Format / Beautify</button>
+            <div class="control-group" style="padding: 16px; gap: 12px; margin-bottom: 16px;">
+                <button class="primary" onclick="formatJSON(4)">Beautify</button>
                 <button onclick="formatJSON(0)">Minify</button>
                 <button onclick="clearJSON()">Clear</button>
             </div>
-            <textarea id="json-input" spellcheck="false" placeholder="Paste JSON here..."></textarea>
-            <div id="json-status" style="margin-top: 10px; font-size: 0.9rem;"></div>
+            <textarea id="json-input" spellcheck="false" placeholder="Paste JSON array/object here..."></textarea>
+            <div id="json-status" style="margin-top: 12px; font-weight: 500;"></div>
         </div>
 
         <!-- TOOL 3: BASE64 -->
@@ -130,168 +270,63 @@
             <h2>Base64 Encode / Decode</h2>
             <div class="two-col">
                 <div class="col">
-                    <label style="font-weight: 500;">Text / String</label>
-                    <textarea id="b64-text" placeholder="Type text here..."></textarea>
+                    <label style="font-weight: 500; font-size: 0.9rem;">Text / String Input</label>
+                    <textarea id="b64-text" placeholder="Type plain text here..."></textarea>
                     <button class="primary" onclick="handleBase64('encode')">Encode &rarr;</button>
                 </div>
                 <div class="col">
-                    <label style="font-weight: 500;">Base64 Result</label>
+                    <label style="font-weight: 500; font-size: 0.9rem;">Base64 Output</label>
                     <textarea id="b64-result" placeholder="Paste Base64 here..."></textarea>
                     <button onclick="handleBase64('decode')">&larr; Decode</button>
                 </div>
             </div>
-            <div id="b64-status" style="margin-top: 10px; font-size: 0.9rem;"></div>
+            <div id="b64-status" style="margin-top: 12px; font-weight: 500;"></div>
         </div>
 
         <!-- TOOL 4: UUID GENERATOR -->
         <div id="uuid-gen" class="tool-section">
-            <h2>UUID / GUID Generator (v4)</h2>
+            <h2>UUID (v4) Generator</h2>
             <div class="control-group">
-                <div class="input-group"><label>Jumlah UUID</label><input type="number" id="uuid-count" value="5" min="1" max="100"></div>
-                <button class="primary" onclick="generateUUIDs()">Generate UUIDs</button>
+                <div class="input-group">
+                    <label>Jumlah UUID yang dibutuhkan</label>
+                    <input type="number" id="uuid-count" value="5" min="1" max="100">
+                </div>
+                <button class="primary" onclick="generateUUIDs()">Generate & Copy</button>
             </div>
-            <textarea id="uuid-output" readonly placeholder="Hasil UUID akan muncul di sini..."></textarea>
+            <textarea id="uuid-output" readonly placeholder="Hasil generate..."></textarea>
         </div>
 
         <!-- TOOL 5: DIALOGUE TO JSON -->
         <div id="dialogue-json" class="tool-section">
             <h2>Dialogue to JSON Converter</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Ketik percakapan dengan format <code>NamaKarakter: Teks percakapan</code> untuk mengubahnya jadi array JSON.</p>
+            <p style="opacity: 0.8; margin-bottom: 24px; font-size: 0.95rem;">
+                Format penulisan: <code>Nama: Teks percakapan</code>. Tekan Enter untuk baris baru.
+            </p>
             <div class="two-col">
                 <div class="col">
-                    <textarea id="dlg-input" placeholder="Pip: Halo semuanya!&#10;Fixer: Ayo kita bangun markas.&#10;Pip: Siap!"></textarea>
-                    <button class="primary" onclick="convertDialogue()">Convert to JSON &rarr;</button>
+                    <textarea id="dlg-input" placeholder="Pip: Kita harus kumpulkan material!&#10;Fixer: Baik, aku akan mengatur resource base."></textarea>
+                    <button class="primary" onclick="convertDialogue()">Convert &rarr;</button>
                 </div>
                 <div class="col">
-                    <textarea id="dlg-output" readonly placeholder="Output JSON..."></textarea>
+                    <textarea id="dlg-output" readonly placeholder="Output array JSON akan muncul di sini..."></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- TOOL 6: RANDOM NAME GEN -->
-        <div id="name-gen" class="tool-section">
-            <h2>Random Name Generator</h2>
-            <div class="control-group">
-                <div class="input-group">
-                    <label>Tema Nama</label>
-                    <select id="name-theme">
-                        <option value="cute">Cute / Fantasy (Wandering Pip)</option>
-                        <option value="survival">Modern / Survival</option>
-                    </select>
-                </div>
-                <div class="input-group"><label>Jumlah</label><input type="number" id="name-count" value="10" min="1" max="50"></div>
-                <button class="primary" onclick="generateNames()">Generate Names</button>
-            </div>
-            <textarea id="name-output" readonly placeholder="Hasil nama..."></textarea>
-        </div>
-
-        <!-- TOOL 7: GACHA -->
-        <div id="gacha-sim" class="tool-section">
-            <h2>Loot Drop & Gacha Simulator</h2>
-            <div class="control-group">
-                <div class="input-group"><label>Drop Rate (%)</label><input type="number" id="gacha-rate" value="0.5" step="0.1"></div>
-                <div class="input-group"><label>Jumlah Pulls</label><input type="number" id="gacha-pulls" value="50" min="1"></div>
-                <button class="primary" onclick="calcGacha()">Hitung</button>
-            </div>
-            <div class="result-box" id="gacha-result">Peluang minimal 1 item: <span>--%</span></div>
-        </div>
-
-        <!-- TOOL 8: ECONOMY SCALER -->
-        <div id="economy-scaler" class="tool-section">
-            <h2>Game Economy Scaler</h2>
-            <div class="control-group">
-                <div class="input-group"><label>Base Value (Lv 1)</label><input type="number" id="eco-base" value="100"></div>
-                <div class="input-group"><label>Multiplier (1.15 = +15%)</label><input type="number" id="eco-multi" value="1.15" step="0.05"></div>
-                <div class="input-group"><label>Max Level</label><input type="number" id="eco-max" value="10" max="100"></div>
-                <button class="primary" onclick="calcEconomy()">Generate</button>
-            </div>
-            <div class="table-container">
-                <table class="data-table" id="eco-table"><thead><tr><th>Level</th><th>Value (Bulat)</th><th>Asli</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-
-        <!-- TOOL 9: RESOURCE TRACKER -->
-        <div id="resource-tracker" class="tool-section">
-            <h2>Resource Tracker (Survival Base)</h2>
-            <div class="control-group">
-                <div class="input-group"><label>Produksi/Menit</label><input type="number" id="res-prod" value="15"></div>
-                <div class="input-group"><label>Konsumsi/Menit</label><input type="number" id="res-cons" value="10"></div>
-                <div class="input-group"><label>Penalti Peran (%)</label><input type="number" id="res-penalty" value="20"></div>
-                <button class="primary" onclick="calcResource()">Hitung Netto</button>
-            </div>
-            <div class="result-box" id="res-result">Status Produksi:<br>Netto per Menit: <span>--</span></div>
-        </div>
-
-        <!-- TOOL 10: DIMINISHING STATS -->
-        <div id="diminishing-calc" class="tool-section">
-            <h2>Stat Diminishing Returns (Armor/Defense)</h2>
-            <div class="control-group">
-                <div class="input-group"><label>Konstanta Game</label><input type="number" id="dim-const" value="100"></div>
-                <div class="input-group"><label>Max Armor</label><input type="number" id="dim-max" value="500" step="50"></div>
-                <div class="input-group"><label>Step Kenaikan</label><input type="number" id="dim-step" value="50"></div>
-                <button class="primary" onclick="calcDiminishing()">Simulasikan</button>
-            </div>
-            <div class="table-container">
-                <table class="data-table" id="dim-table"><thead><tr><th>Stat Armor</th><th>Damage Reduction (%)</th><th>Damage Diterima (%)</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-
-        <!-- TOOL 11: PIXEL MAKER -->
+        <!-- TOOL 6: PIXEL MAKER -->
         <div id="pixel-maker" class="tool-section">
-            <h2>Simple Pixel Maker (32x32 Grid)</h2>
-            <p style="color: var(--text-muted); margin-bottom: 10px;">Corat-coret ide sprite/icon di sini. Klik dan drag untuk menggambar.</p>
-            <div class="pixel-controls">
-                <div class="input-group">
-                    <label>Warna Brush</label>
-                    <input type="color" id="px-color" value="#000000" style="width: 40px; height: 40px; background: none; border: 1px solid var(--border);">
+            <h2>Simple Pixel Maker</h2>
+            <div class="pixel-container">
+                <div class="pixel-controls">
+                    <input type="color" id="px-color" value="#000000" title="Pilih Warna">
+                    <button onclick="pxSetBrush()">Brush</button>
+                    <button onclick="pxSetEraser()">Eraser</button>
+                    <button onclick="pxClear()">Clear</button>
+                    <button class="primary" onclick="pxExport()">Save PNG</button>
                 </div>
-                <button onclick="pxSetBrush()">Brush</button>
-                <button onclick="pxSetEraser()">Eraser</button>
-                <button onclick="pxClear()">Clear Canvas</button>
-                <button class="primary" onclick="pxExport()">Download PNG</button>
-            </div>
-            <canvas id="pixel-canvas" width="320" height="320"></canvas>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">*Resolusi ekspor murni 32x32 pixel.</p>
-        </div>
-
-        <!-- TOOL 12: SPRITE CALCULATOR -->
-        <div id="sprite-calc" class="tool-section">
-            <h2>Sprite Sheet Calculator</h2>
-            <div class="control-group">
-                <div class="input-group"><label>Total Lebar (px)</label><input type="number" id="spr-w" value="1024"></div>
-                <div class="input-group"><label>Total Tinggi (px)</label><input type="number" id="spr-h" value="1024"></div>
-                <div class="input-group"><label>Tile Lebar (px)</label><input type="number" id="spr-tw" value="64"></div>
-                <div class="input-group"><label>Tile Tinggi (px)</label><input type="number" id="spr-th" value="64"></div>
-                <button class="primary" onclick="calcSprite()">Hitung Frame</button>
-            </div>
-            <div class="result-box" id="spr-result">Kolom: <span>--</span><br>Baris: <span>--</span><br>Total Frame: <span>--</span></div>
-        </div>
-
-        <!-- TOOL 13: EASING VISUALIZER -->
-        <div id="easing-vis" class="tool-section">
-            <h2>Easing Visualizer</h2>
-            <div class="control-group">
-                <div class="input-group">
-                    <label>Fungsi Easing</label>
-                    <select id="ease-type" onchange="drawEasing()">
-                        <option value="linear">Linear</option>
-                        <option value="easeOutBounce" selected>Ease Out Bounce</option>
-                        <option value="easeOutElastic">Ease Out Elastic</option>
-                        <option value="easeOutQuad">Ease Out Quad</option>
-                    </select>
-                </div>
-                <button class="primary" onclick="animateEasing()">Play Animasi</button>
-            </div>
-            <div class="two-col">
-                <div class="col"><canvas id="ease-canvas" class="easing-canvas" width="400" height="250"></canvas></div>
-                <div class="col">
-                    <div class="result-box" style="height: 100%;">
-                        <label style="font-size: 0.85rem; color: var(--text-muted);">Preview:</label>
-                        <div style="position: relative; width: 100%; height: 50px; background: var(--bg-dark); border-radius: 25px; margin-top: 15px; border: 1px solid var(--border); overflow: hidden;">
-                            <div id="ease-ball" style="position: absolute; top: 5px; left: 5px; width: 40px; height: 40px; background: var(--accent); border-radius: 50%;"></div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Canvas internal 320x320, represents 32x32 grid (10px per cell visually) -->
+                <canvas id="pixel-canvas" width="320" height="320"></canvas>
+                <p style="font-size: 0.8rem; margin-top: 16px; opacity: 0.7;">Resolusi ekspor asli: 32x32 pixel.</p>
             </div>
         </div>
 
@@ -300,45 +335,104 @@
     <div id="toast" class="copy-toast">Copied!</div>
 
     <script>
-        // --- GLOBAL ---
+        // --- MOBILE DRAWER LOGIC ---
+        function toggleDrawer() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('drawer-overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // --- NAVIGATION LOGIC ---
         function switchTool(toolId, navElement) {
             document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
             document.getElementById(toolId).classList.add('active');
             navElement.classList.add('active');
-            if(toolId === 'easing-vis') drawEasing();
+            
+            // Re-render pixel grid if opening pixel maker to fix scaling visual bugs
             if(toolId === 'pixel-maker') drawPxGrid();
-        }
-        function showToast(text) {
-            const t = document.getElementById('toast'); t.innerText = text;
-            t.style.display = 'block'; void t.offsetWidth; t.style.opacity = '1';
-            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.style.display = 'none', 300); }, 2000);
+            
+            // Close drawer on mobile after selection
+            if(window.innerWidth <= 767) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('drawer-overlay').classList.remove('active');
+            }
+            window.scrollTo(0,0);
         }
 
-        // --- COLOR ---
+        // --- TOAST NOTIFICATION ---
+        function showToast(text) {
+            const t = document.getElementById('toast'); 
+            t.innerText = text;
+            t.style.display = 'block'; 
+            void t.offsetWidth; // trigger reflow
+            t.style.opacity = '1';
+            setTimeout(() => { 
+                t.style.opacity = '0'; 
+                setTimeout(() => t.style.display = 'none', 300); 
+            }, 2000);
+        }
+
+        // --- TOOL 1: MATERIAL COLOR PALETTE ---
         function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let cn=Math.min(r,g,b),cx=Math.max(r,g,b),d=cx-cn,h=0,s=0,l=(cx+cn)/2;if(d==0)h=0;else if(cx==r)h=((g-b)/d)%6;else if(cx==g)h=(b-r)/d+2;else h=(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360;s=d==0?0:d/(1-Math.abs(2*l-1));return[h,+(s*100).toFixed(1),+(l*100).toFixed(1)];}
         function hslToHex(h,s,l){s/=100;l/=100;let c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;if(h<60){r=c;g=x;b=0;}else if(h<120){r=x;g=c;b=0;}else if(h<180){r=0;g=c;b=x;}else if(h<240){r=0;g=x;b=c;}else if(h<300){r=x;g=0;b=c;}else{r=c;g=0;b=x;}r=Math.round((r+m)*255).toString(16).padStart(2,'0');g=Math.round((g+m)*255).toString(16).padStart(2,'0');b=Math.round((b+m)*255).toString(16).padStart(2,'0');return `#${r}${g}${b}`;}
         function generatePalette() {
-            const hx = document.getElementById('hex-input').value; if(!/^#[0-9A-F]{6}$/i.test(hx)) return;
+            const hx = document.getElementById('hex-input').value; 
+            if(!/^#[0-9A-F]{6}$/i.test(hx)) { showToast("Format HEX tidak valid!"); return; }
+            
             const r=parseInt(hx.slice(1,3),16), g=parseInt(hx.slice(3,5),16), b=parseInt(hx.slice(5,7),16);
             const [h, s, bl] = rgbToHsl(r, g, b);
-            const w = [{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:bl},{w:600,l:Math.max(10,bl-10)},{w:700,l:Math.max(10,bl-20)},{w:800,l:Math.max(10,bl-30)},{w:900,l:Math.max(5,bl-40)}];
-            const cnt = document.getElementById('palette-output'); cnt.innerHTML = '';
-            w.forEach(i => {
-                const hex = hslToHex(h, s, i.l); const tc = i.l > 60 ? '#000' : '#fff';
-                const el = document.createElement('div'); el.className = 'color-swatch'; el.onclick = () => { navigator.clipboard.writeText(hex); showToast("Hex Copied!"); };
-                el.innerHTML = `<div class="color-fill" style="background-color:${hex};color:${tc}"><span style="font-weight:bold;">${i.w}</span></div><div class="color-info"><div class="color-hex">${hex.toUpperCase()}</div></div>`;
+            
+            // Material 3 typical tonal ranges
+            const weights = [{w:10,l:99},{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:50},{w:600,l:40},{w:700,l:30},{w:800,l:20},{w:900,l:10}];
+            const cnt = document.getElementById('palette-output'); 
+            cnt.innerHTML = '';
+            
+            weights.forEach(i => {
+                const hex = hslToHex(h, s, i.l); 
+                const tc = i.l > 50 ? '#1A1C18' : '#FFFFFF';
+                const el = document.createElement('div'); el.className = 'color-swatch'; 
+                el.onclick = () => { navigator.clipboard.writeText(hex); showToast(hex.toUpperCase() + " Copied!"); };
+                el.innerHTML = `<div class="color-fill" style="background-color:${hex};color:${tc}"><span style="font-weight:bold;">${i.w}</span></div><div class="color-info"><div>${hex.toUpperCase()}</div></div>`;
                 cnt.appendChild(el);
             });
         }
-        document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value);
+        document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value.toUpperCase());
         document.getElementById('hex-input').addEventListener('input', (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('base-color').value = e.target.value; });
 
-        // --- JSON, B64, UUID, DIALOGUE, NAME ---
-        function formatJSON(s) { const i=document.getElementById('json-input'), st=document.getElementById('json-status'); try { i.value = JSON.stringify(JSON.parse(i.value), null, s); st.innerHTML='<span style="color:var(--success)">Valid JSON!</span>'; } catch(e) { st.innerHTML=`<span style="color:var(--error)">Error: ${e.message}</span>`; } }
+        // --- TOOL 2: JSON FORMATTER ---
+        function formatJSON(s) { 
+            const i=document.getElementById('json-input'), st=document.getElementById('json-status'); 
+            try { 
+                if(i.value.trim() === '') return;
+                i.value = JSON.stringify(JSON.parse(i.value), null, s); 
+                st.innerHTML='<span style="color:var(--md-success)">Valid JSON!</span>'; 
+            } catch(e) { 
+                st.innerHTML=`<span style="color:var(--md-error)">Error: ${e.message}</span>`; 
+            } 
+        }
         function clearJSON() { document.getElementById('json-input').value=''; document.getElementById('json-status').innerHTML=''; }
-        function handleBase64(a) { const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'), st=document.getElementById('b64-status'); try { if(a==='encode'){ r.value=btoa(unescape(encodeURIComponent(t.value))); st.innerHTML='<span style="color:var(--success)">Encoded!</span>';} else { t.value=decodeURIComponent(escape(atob(r.value))); st.innerHTML='<span style="color:var(--success)">Decoded!</span>'; } } catch(e) { st.innerHTML=`<span style="color:var(--error)">Format Error!</span>`; } }
         
+        // --- TOOL 3: BASE64 ---
+        function handleBase64(a) { 
+            const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'), st=document.getElementById('b64-status'); 
+            try { 
+                if(a==='encode'){ 
+                    if(!t.value) return;
+                    r.value=btoa(unescape(encodeURIComponent(t.value))); 
+                    st.innerHTML='<span style="color:var(--md-success)">Berhasil di-Encode!</span>';
+                } else { 
+                    if(!r.value) return;
+                    t.value=decodeURIComponent(escape(atob(r.value))); 
+                    st.innerHTML='<span style="color:var(--md-success)">Berhasil di-Decode!</span>'; 
+                } 
+            } catch(e) { 
+                st.innerHTML=`<span style="color:var(--md-error)">Input tidak valid!</span>`; 
+            } 
+        }
+
+        // --- TOOL 4: UUID GENERATOR ---
         function generateUUIDs() {
             const count = parseInt(document.getElementById('uuid-count').value) || 1;
             let result = [];
@@ -349,9 +443,11 @@
                 }));
             }
             document.getElementById('uuid-output').value = result.join('\n');
-            navigator.clipboard.writeText(result.join('\n')); showToast("UUIDs Copied!");
+            navigator.clipboard.writeText(result.join('\n')); 
+            showToast(count + " UUID disalin ke Clipboard!");
         }
 
+        // --- TOOL 5: DIALOGUE TO JSON ---
         function convertDialogue() {
             const lines = document.getElementById('dlg-input').value.split('\n');
             let json = [];
@@ -364,57 +460,34 @@
                     json.push({ character: "Unknown", text: line.trim() });
                 }
             });
-            document.getElementById('dlg-output').value = JSON.stringify(json, null, 2);
+            const out = JSON.stringify(json, null, 2);
+            document.getElementById('dlg-output').value = out;
+            navigator.clipboard.writeText(out);
+            showToast("JSON disalin!");
         }
 
-        function generateNames() {
-            const type = document.getElementById('name-theme').value;
-            const count = parseInt(document.getElementById('name-count').value) || 1;
-            const cutePrefix = ["Po", "Pi", "Lu", "Mo", "Ki", "Chu", "Ma", "Bloop"];
-            const cuteSuffix = ["chi", "pip", "lu", "ko", "mi", "ya", "rin", "by"];
-            const survPrefix = ["Scrap", "Rust", "Dust", "Grit", "Iron", "Ash", "Cole", "Flint"];
-            const survSuffix = ["er", "son", "man", "ton", "wood", "yard", "ward", "smith"];
-            
-            let res = [];
-            for(let i=0; i<count; i++) {
-                let p = type === 'cute' ? cutePrefix : survPrefix;
-                let s = type === 'cute' ? cuteSuffix : survSuffix;
-                let name = p[Math.floor(Math.random()*p.length)] + s[Math.floor(Math.random()*s.length)];
-                res.push(name);
-            }
-            document.getElementById('name-output').value = res.join('\n');
-        }
-
-        // --- SIMULATORS ---
-        function calcGacha() { const r = parseFloat(document.getElementById('gacha-rate').value)/100, p = parseInt(document.getElementById('gacha-pulls').value); if(isNaN(r)||isNaN(p)||p<1) return; const prob = (1-Math.pow(1-r,p))*100; document.getElementById('gacha-result').innerHTML = `Peluang mendapatkan minimal 1 item:<br><br> <span style="font-size: 2rem; color: ${prob<30?'var(--error)':prob>80?'var(--success)':'var(--accent)'};">${prob.toFixed(2)}%</span>`; }
-        function calcEconomy() { const b=parseFloat(document.getElementById('eco-base').value), m=parseFloat(document.getElementById('eco-multi').value), mx=parseInt(document.getElementById('eco-max').value), tb=document.querySelector('#eco-table tbody'); tb.innerHTML=''; for(let i=1;i<=mx;i++){ const v=b*Math.pow(m,i-1); tb.innerHTML+=`<tr><td>Lv ${i}</td><td><b>${Math.round(v).toLocaleString()}</b></td><td style="color:var(--text-muted)">${v.toFixed(2)}</td></tr>`; } }
-        function calcResource() { const p=parseFloat(document.getElementById('res-prod').value), c=parseFloat(document.getElementById('res-cons').value), pn=parseFloat(document.getElementById('res-penalty').value)/100; const tc=c+(c*pn), nm=p-tc; const col=nm>=0?'var(--success)':'var(--error)'; document.getElementById('res-result').innerHTML = `Status Produksi: <span style="color:${col}">${nm>=0?'Surplus':'Defisit'}</span><br><br>Total Konsumsi (Penalti): ${tc.toFixed(1)} / mnt<br>Netto per Menit: <span style="color:${col}">${nm>0?'+'+nm.toFixed(1):nm.toFixed(1)}</span>`; }
-        function calcDiminishing() { const k=parseFloat(document.getElementById('dim-const').value), mx=parseFloat(document.getElementById('dim-max').value), st=parseFloat(document.getElementById('dim-step').value), tb=document.querySelector('#dim-table tbody'); tb.innerHTML=''; for(let a=st;a<=mx;a+=st){ const r=(a/(a+k))*100, d=100-r; tb.innerHTML+=`<tr><td><b>${a}</b></td><td style="color:var(--success)">${r.toFixed(2)}%</td><td style="color:var(--error)">${d.toFixed(2)}%</td></tr>`; } }
-        function calcSprite() { const w=parseInt(document.getElementById('spr-w').value), h=parseInt(document.getElementById('spr-h').value), tw=parseInt(document.getElementById('spr-tw').value), th=parseInt(document.getElementById('spr-th').value); if(!w||!h||!tw||!th) return; const c=w/tw, r=h/th; document.getElementById('spr-result').innerHTML=`Kolom: <span>${c}</span><br>Baris: <span>${r}</span><br>Total Frame: <span>${c*r}</span>`+(!Number.isInteger(c)||!Number.isInteger(r)?'<br><span style="color:var(--error);font-size:0.9rem;">Sisa pixel terdeteksi!</span>':''); }
-
-        // --- EASING ---
-        const easeFuncs = { linear: t=>t, easeOutQuad: t=>t*(2-t), easeOutBounce: t=>{const n=7.5625,d=2.75;if(t<1/d)return n*t*t;if(t<2/d)return n*(t-=1.5/d)*t+.75;if(t<2.5/d)return n*(t-=2.25/d)*t+.9375;return n*(t-=2.625/d)*t+.984375;}, easeOutElastic: t=>{const c4=(2*Math.PI)/3;return t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1;} };
-        function drawEasing() { const cv=document.getElementById('ease-canvas'); if(!cv.getContext)return; const ctx=cv.getContext('2d'), fn=easeFuncs[document.getElementById('ease-type').value]; ctx.clearRect(0,0,cv.width,cv.height); ctx.strokeStyle='#333'; ctx.lineWidth=1; ctx.beginPath(); for(let i=0;i<=10;i++){ let x=i*(cv.width/10), y=i*(cv.height/10); ctx.moveTo(x,0); ctx.lineTo(x,cv.height); ctx.moveTo(0,y); ctx.lineTo(cv.width,y); } ctx.stroke(); ctx.strokeStyle='#bb86fc'; ctx.lineWidth=3; ctx.beginPath(); for(let x=0;x<=cv.width;x++){ let t=x/cv.width, y=cv.height-(fn(t)*(cv.height-40))-20; if(x===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.stroke(); }
-        let animId; function animateEasing() { cancelAnimationFrame(animId); const b=document.getElementById('ease-ball'), fn=easeFuncs[document.getElementById('ease-type').value], dur=1500, mx=b.parentElement.offsetWidth-b.offsetWidth-10; let st=null; function step(ts){ if(!st)st=ts; let p=(ts-st)/dur; if(p>1)p=1; b.style.transform=`translateX(${fn(p)*mx}px)`; if(p<1)animId=requestAnimationFrame(step); } animId=requestAnimationFrame(step); }
-
-        // --- PIXEL EDITOR ---
+        // --- TOOL 6: PIXEL MAKER ---
         const pxCv = document.getElementById('pixel-canvas');
         const pxCtx = pxCv.getContext('2d');
         const gridSize = 32;
-        const cellSize = 320 / gridSize; // 10px per cell
+        const cvSize = 320;
+        const cellSize = cvSize / gridSize; // 10px per cell
         let isDrawing = false;
         let isEraser = false;
         let pxData = new Array(gridSize*gridSize).fill(null);
 
         function drawPxGrid() {
-            pxCtx.clearRect(0, 0, 320, 320);
-            pxCtx.strokeStyle = '#e0e0e0';
-            pxCtx.lineWidth = 0.5;
+            pxCtx.clearRect(0, 0, cvSize, cvSize);
+            
+            // Draw grid lines
+            pxCtx.strokeStyle = 'rgba(128, 128, 128, 0.2)';
+            pxCtx.lineWidth = 1;
             for(let i=0; i<=gridSize; i++) {
-                pxCtx.beginPath(); pxCtx.moveTo(i*cellSize, 0); pxCtx.lineTo(i*cellSize, 320); pxCtx.stroke();
-                pxCtx.beginPath(); pxCtx.moveTo(0, i*cellSize); pxCtx.lineTo(320, i*cellSize); pxCtx.stroke();
+                pxCtx.beginPath(); pxCtx.moveTo(i*cellSize, 0); pxCtx.lineTo(i*cellSize, cvSize); pxCtx.stroke();
+                pxCtx.beginPath(); pxCtx.moveTo(0, i*cellSize); pxCtx.lineTo(cvSize, i*cellSize); pxCtx.stroke();
             }
-            // Redraw data
+            
+            // Draw pixels
             pxData.forEach((col, idx) => {
                 if(col) {
                     let x = idx % gridSize, y = Math.floor(idx / gridSize);
@@ -427,33 +500,50 @@
         function paintPixel(e) {
             if(!isDrawing) return;
             const rect = pxCv.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.left) / cellSize);
-            const y = Math.floor((e.clientY - rect.top) / cellSize);
+            // Handle scale if canvas is squished by CSS width: 100%
+            const scaleX = pxCv.width / rect.width;
+            const scaleY = pxCv.height / rect.height;
+            
+            let clientX, clientY;
+            if(e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const x = Math.floor(((clientX - rect.left) * scaleX) / cellSize);
+            const y = Math.floor(((clientY - rect.top) * scaleY) / cellSize);
+            
             if(x < 0 || x >= gridSize || y < 0 || y >= gridSize) return;
             const idx = y * gridSize + x;
             
-            if(isEraser) {
-                pxData[idx] = null;
-            } else {
-                pxData[idx] = document.getElementById('px-color').value;
-            }
+            pxData[idx] = isEraser ? null : document.getElementById('px-color').value;
             drawPxGrid();
         }
 
+        // Mouse Events
         pxCv.addEventListener('mousedown', (e) => { isDrawing = true; paintPixel(e); });
         pxCv.addEventListener('mousemove', paintPixel);
         pxCv.addEventListener('mouseup', () => isDrawing = false);
         pxCv.addEventListener('mouseleave', () => isDrawing = false);
+
+        // Touch Events for Mobile (Galaxy A07)
+        pxCv.addEventListener('touchstart', (e) => { e.preventDefault(); isDrawing = true; paintPixel(e); }, {passive: false});
+        pxCv.addEventListener('touchmove', (e) => { e.preventDefault(); paintPixel(e); }, {passive: false});
+        pxCv.addEventListener('touchend', () => isDrawing = false);
 
         function pxSetBrush() { isEraser = false; pxCv.style.cursor = 'crosshair'; }
         function pxSetEraser() { isEraser = true; pxCv.style.cursor = 'cell'; }
         function pxClear() { pxData.fill(null); drawPxGrid(); }
         
         function pxExport() {
-            // Buat canvas bayangan ukuran murni 32x32
+            // Create a 32x32 offscreen canvas for pure export
             const expCv = document.createElement('canvas');
             expCv.width = gridSize; expCv.height = gridSize;
             const expCtx = expCv.getContext('2d');
+            
             pxData.forEach((col, idx) => {
                 if(col) {
                     let x = idx % gridSize, y = Math.floor(idx / gridSize);
@@ -461,14 +551,19 @@
                     expCtx.fillRect(x, y, 1, 1);
                 }
             });
+            
             const link = document.createElement('a');
             link.download = 'sprite_32x32.png';
             link.href = expCv.toDataURL('image/png');
             link.click();
+            showToast("Sprite didownload!");
         }
 
-        // Init
-        window.onload = () => { generatePalette(); drawEasing(); drawPxGrid(); };
+        // Initialization
+        window.onload = () => { 
+            generatePalette(); 
+            drawPxGrid(); 
+        };
     </script>
 </body>
 </html>
