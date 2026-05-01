@@ -16,10 +16,11 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
         /* Sidebar */
-        aside { width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .brand { padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); }
-        .nav-links { list-style: none; padding: 10px 0; overflow-y: auto; }
-        .nav-links li { padding: 12px 20px; cursor: pointer; transition: background 0.2s; color: var(--text-muted); border-left: 3px solid transparent; font-size: 0.95rem; }
+        aside { min-width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .brand { padding: 20px; font-size: 1.2rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-panel); z-index: 10; }
+        .nav-links { list-style: none; padding: 10px 0; }
+        .nav-group { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; padding: 10px 20px 5px; font-weight: bold; letter-spacing: 1px; }
+        .nav-links li { padding: 10px 20px; cursor: pointer; transition: background 0.2s; color: var(--text-muted); border-left: 3px solid transparent; font-size: 0.95rem; }
         .nav-links li:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text-main); }
         .nav-links li.active { background-color: rgba(187, 134, 252, 0.1); color: var(--accent); border-left: 3px solid var(--accent); }
 
@@ -30,27 +31,28 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         h2 { margin-bottom: 20px; font-weight: 500; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
 
-        /* Reusable UI Components */
+        /* Reusable UI */
         .control-group { background: var(--bg-panel); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; align-items: flex-end; gap: 15px; flex-wrap: wrap; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         .input-group label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
         
-        input[type="text"], input[type="number"], textarea {
+        input[type="text"], input[type="number"], select, textarea {
             padding: 10px; background: var(--bg-input); border: 1px solid var(--border);
             color: var(--text-main); border-radius: 4px; font-size: 0.95rem; font-family: monospace;
         }
         input[type="number"] { width: 120px; }
+        select { width: 180px; cursor: pointer; }
         textarea { resize: vertical; min-height: 200px; width: 100%; }
-        textarea:focus, input:focus { outline: 1px solid var(--accent); }
+        textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); }
 
         button { padding: 10px 20px; background-color: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         button.primary { background-color: var(--accent); color: #000; border: none; font-weight: bold; }
         button:hover { filter: brightness(1.2); }
 
-        .result-box { background: var(--bg-input); padding: 20px; border-radius: 8px; border: 1px solid var(--border); font-size: 1.1rem; }
+        .result-box { background: var(--bg-input); padding: 20px; border-radius: 8px; border: 1px solid var(--border); font-size: 1.1rem; line-height: 1.6; }
         .result-box span { font-weight: bold; color: var(--accent); }
 
-        /* Specific Tool Styles */
+        /* Specific Tools */
         input[type="color"] { width: 45px; height: 45px; border: none; border-radius: 8px; cursor: pointer; background: none; }
         .palette-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; }
         .color-swatch { border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.2s; }
@@ -61,9 +63,12 @@
         
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .data-table th, .data-table td { padding: 10px; border: 1px solid var(--border); text-align: left; }
-        .data-table th { background-color: var(--bg-panel); color: var(--accent); }
+        .data-table th { background-color: var(--bg-panel); color: var(--accent); position: sticky; top: 0;}
+        .table-container { max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
 
-        .copy-toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; padding: 10px 20px; border-radius: 4px; font-weight: bold; display: none; opacity: 0; transition: opacity 0.3s; }
+        canvas.easing-canvas { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 400px; height: 250px; display: block; margin-bottom: 15px; }
+
+        .copy-toast { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; padding: 10px 20px; border-radius: 4px; font-weight: bold; display: none; opacity: 0; transition: opacity 0.3s; z-index: 999; }
     </style>
 </head>
 <body>
@@ -71,19 +76,25 @@
     <aside>
         <div class="brand">DevTools AIO</div>
         <ul class="nav-links" id="nav-links">
-            <!-- Phase 1 -->
+            <div class="nav-group">App & Text Utils</div>
             <li class="active" onclick="switchTool('color-generator', this)">Material Palette</li>
             <li onclick="switchTool('json-formatter', this)">JSON Formatter</li>
             <li onclick="switchTool('base64-tool', this)">Base64 Encoder</li>
-            <!-- Phase 2 -->
-            <li onclick="switchTool('gacha-sim', this)">Gacha & Drop Sim</li>
+            
+            <div class="nav-group">Game Economy</div>
+            <li onclick="switchTool('gacha-sim', this)">Gacha Simulator</li>
             <li onclick="switchTool('economy-scaler', this)">Economy Scaler</li>
             <li onclick="switchTool('resource-tracker', this)">Resource Tracker</li>
+            <li onclick="switchTool('diminishing-calc', this)">Diminishing Stats</li>
+            
+            <div class="nav-group">2D & Animation</div>
+            <li onclick="switchTool('sprite-calc', this)">Sprite Sheet Calc</li>
+            <li onclick="switchTool('easing-vis', this)">Easing Visualizer</li>
         </ul>
     </aside>
 
     <main>
-        <!-- TOOL 1: COLOR GENERATOR -->
+        <!-- TOOL 1: COLOR -->
         <div id="color-generator" class="tool-section active">
             <h2>Material Tonal Palette</h2>
             <div class="control-group">
@@ -94,7 +105,7 @@
             <div class="palette-grid" id="palette-output"></div>
         </div>
 
-        <!-- TOOL 2: JSON FORMATTER -->
+        <!-- TOOL 2: JSON -->
         <div id="json-formatter" class="tool-section">
             <h2>JSON Formatter & Validator</h2>
             <div class="control-group" style="margin-bottom: 10px;">
@@ -102,7 +113,7 @@
                 <button onclick="formatJSON(0)">Minify</button>
                 <button onclick="clearJSON()">Clear</button>
             </div>
-            <textarea id="json-input" spellcheck="false" placeholder="Paste your JSON here..."></textarea>
+            <textarea id="json-input" spellcheck="false" placeholder="Paste JSON here..."></textarea>
             <div id="json-status" style="margin-top: 10px; font-size: 0.9rem;"></div>
         </div>
 
@@ -113,87 +124,117 @@
                 <div class="col">
                     <label style="font-weight: 500;">Text / String</label>
                     <textarea id="b64-text" placeholder="Type text here..."></textarea>
-                    <button class="primary" onclick="handleBase64('encode')">Encode to Base64 &rarr;</button>
+                    <button class="primary" onclick="handleBase64('encode')">Encode &rarr;</button>
                 </div>
                 <div class="col">
                     <label style="font-weight: 500;">Base64 Result</label>
                     <textarea id="b64-result" placeholder="Paste Base64 here..."></textarea>
-                    <button onclick="handleBase64('decode')">&larr; Decode to Text</button>
+                    <button onclick="handleBase64('decode')">&larr; Decode</button>
                 </div>
             </div>
             <div id="b64-status" style="margin-top: 10px; font-size: 0.9rem;"></div>
         </div>
 
-        <!-- TOOL 4: GACHA & DROP SIMULATOR -->
+        <!-- TOOL 4: GACHA -->
         <div id="gacha-sim" class="tool-section">
             <h2>Loot Drop & Gacha Simulator</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Hitung probabilitas kumulatif untuk mendapatkan item spesifik (misal material SSR Wandering Pip) berdasarkan persentase drop rate dan jumlah percobaan (pulls).</p>
             <div class="control-group">
-                <div class="input-group">
-                    <label>Drop Rate (%)</label>
-                    <input type="number" id="gacha-rate" value="0.5" step="0.1" min="0" max="100">
-                </div>
-                <div class="input-group">
-                    <label>Jumlah Percobaan (Pulls/Kills)</label>
-                    <input type="number" id="gacha-pulls" value="50" min="1">
-                </div>
-                <button class="primary" onclick="calcGacha()">Hitung Peluang</button>
+                <div class="input-group"><label>Drop Rate (%)</label><input type="number" id="gacha-rate" value="0.5" step="0.1"></div>
+                <div class="input-group"><label>Jumlah Pulls</label><input type="number" id="gacha-pulls" value="50" min="1"></div>
+                <button class="primary" onclick="calcGacha()">Hitung</button>
             </div>
-            <div class="result-box" id="gacha-result">
-                Peluang mendapatkan minimal 1 item: <span>--%</span>
-            </div>
+            <div class="result-box" id="gacha-result">Peluang minimal 1 item: <span>--%</span></div>
         </div>
 
         <!-- TOOL 5: ECONOMY SCALER -->
         <div id="economy-scaler" class="tool-section">
             <h2>Game Economy Scaler</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Simulasikan inflasi harga item, kebutuhan EXP, atau HP musuh tiap level menggunakan formula eksponensial.</p>
             <div class="control-group">
-                <div class="input-group">
-                    <label>Base Value (Lv 1)</label>
-                    <input type="number" id="eco-base" value="100">
-                </div>
-                <div class="input-group">
-                    <label>Multiplier (Misal 1.15 = +15%)</label>
-                    <input type="number" id="eco-multi" value="1.15" step="0.05">
-                </div>
-                <div class="input-group">
-                    <label>Max Level</label>
-                    <input type="number" id="eco-max" value="10" max="100">
-                </div>
-                <button class="primary" onclick="calcEconomy()">Generate Tabel</button>
+                <div class="input-group"><label>Base Value (Lv 1)</label><input type="number" id="eco-base" value="100"></div>
+                <div class="input-group"><label>Multiplier (1.15 = +15%)</label><input type="number" id="eco-multi" value="1.15" step="0.05"></div>
+                <div class="input-group"><label>Max Level</label><input type="number" id="eco-max" value="10" max="100"></div>
+                <button class="primary" onclick="calcEconomy()">Generate</button>
             </div>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <table class="data-table" id="eco-table">
-                    <thead><tr><th>Level</th><th>Value (Dibulatkan)</th><th>Value (Asli)</th></tr></thead>
-                    <tbody><!-- Rendered via JS --></tbody>
-                </table>
+            <div class="table-container">
+                <table class="data-table" id="eco-table"><thead><tr><th>Level</th><th>Value (Bulat)</th><th>Asli</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
 
         <!-- TOOL 6: RESOURCE TRACKER -->
         <div id="resource-tracker" class="tool-section">
-            <h2>Resource Consumption Tracker</h2>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">Hitung surplus/defisit manajemen base (cocok untuk menyeimbangkan produksi makanan dengan penalti peran Fixer/Scavenger).</p>
+            <h2>Resource Tracker (Survival Base)</h2>
             <div class="control-group">
-                <div class="input-group">
-                    <label>Produksi (Per Menit)</label>
-                    <input type="number" id="res-prod" value="15">
-                </div>
-                <div class="input-group">
-                    <label>Konsumsi Dasar (Per Menit)</label>
-                    <input type="number" id="res-cons" value="10">
-                </div>
-                <div class="input-group">
-                    <label>Penalti Efisiensi Peran (%)</label>
-                    <input type="number" id="res-penalty" value="20" title="Masukkan nilai positif jika konsumsi lebih boros">
-                </div>
+                <div class="input-group"><label>Produksi/Menit</label><input type="number" id="res-prod" value="15"></div>
+                <div class="input-group"><label>Konsumsi/Menit</label><input type="number" id="res-cons" value="10"></div>
+                <div class="input-group"><label>Penalti Peran (%)</label><input type="number" id="res-penalty" value="20"></div>
                 <button class="primary" onclick="calcResource()">Hitung Netto</button>
             </div>
-            <div class="result-box" id="res-result">
-                Status Produksi:<br><br>
-                Netto per Menit: <span>--</span><br>
-                Netto per Jam: <span>--</span>
+            <div class="result-box" id="res-result">Status Produksi:<br>Netto per Menit: <span>--</span></div>
+        </div>
+
+        <!-- TOOL 7: DIMINISHING STATS -->
+        <div id="diminishing-calc" class="tool-section">
+            <h2>Stat Diminishing Returns (Armor/Defense)</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Simulasi rumus <code>Reduksi = Armor / (Armor + Konstanta)</code> untuk mencegah stats karakter over-powered di late game.</p>
+            <div class="control-group">
+                <div class="input-group"><label>Konstanta Game</label><input type="number" id="dim-const" value="100" title="Semakin besar konstanta, semakin sulit mendapat reduksi tinggi"></div>
+                <div class="input-group"><label>Max Armor Dites</label><input type="number" id="dim-max" value="500" step="50"></div>
+                <div class="input-group"><label>Step (Kenaikan)</label><input type="number" id="dim-step" value="50"></div>
+                <button class="primary" onclick="calcDiminishing()">Simulasikan</button>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="dim-table"><thead><tr><th>Stat Armor</th><th>Damage Reduction (%)</th><th>Damage Diterima (%)</th></tr></thead><tbody></tbody></table>
+            </div>
+        </div>
+
+        <!-- TOOL 8: SPRITE SHEET CALC -->
+        <div id="sprite-calc" class="tool-section">
+            <h2>Sprite Sheet & Tile Calculator</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Hitung jumlah frame kolom dan baris dari gambar spritesheet utuh.</p>
+            <div class="control-group">
+                <div class="input-group"><label>Lebar Total Gambar (px)</label><input type="number" id="spr-w" value="1024"></div>
+                <div class="input-group"><label>Tinggi Total Gambar (px)</label><input type="number" id="spr-h" value="1024"></div>
+                <div class="input-group"><label>Lebar per Tile (px)</label><input type="number" id="spr-tw" value="64"></div>
+                <div class="input-group"><label>Tinggi per Tile (px)</label><input type="number" id="spr-th" value="64"></div>
+                <button class="primary" onclick="calcSprite()">Hitung Frame</button>
+            </div>
+            <div class="result-box" id="spr-result">
+                Kolom (Horizontal): <span>--</span><br>
+                Baris (Vertikal): <span>--</span><br>
+                Total Frame: <span>--</span>
+            </div>
+        </div>
+
+        <!-- TOOL 9: EASING VISUALIZER -->
+        <div id="easing-vis" class="tool-section">
+            <h2>Easing & Tweening Visualizer</h2>
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Visualisasi kurva animasi matematika (Lerp) agar pergerakan UI / 3D Object terasa "lucu" dan tidak kaku.</p>
+            <div class="control-group">
+                <div class="input-group">
+                    <label>Fungsi Easing</label>
+                    <select id="ease-type" onchange="drawEasing()">
+                        <option value="linear">Linear (Kaku)</option>
+                        <option value="easeInQuad">Ease In Quad (Mulai Lambat)</option>
+                        <option value="easeOutQuad">Ease Out Quad (Berhenti Lambat)</option>
+                        <option value="easeOutBounce" selected>Ease Out Bounce (Lucu/Bouncy)</option>
+                        <option value="easeOutElastic">Ease Out Elastic (Karet)</option>
+                    </select>
+                </div>
+                <button class="primary" onclick="animateEasing()">Play Animasi</button>
+            </div>
+            
+            <div class="two-col">
+                <div class="col">
+                    <canvas id="ease-canvas" class="easing-canvas" width="400" height="250"></canvas>
+                </div>
+                <div class="col">
+                    <div class="result-box" style="height: 100%;">
+                        <label style="font-size: 0.85rem; color: var(--text-muted);">Preview Gerakan:</label>
+                        <div style="position: relative; width: 100%; height: 50px; background: var(--bg-dark); border-radius: 25px; margin-top: 15px; border: 1px solid var(--border); overflow: hidden;">
+                            <div id="ease-ball" style="position: absolute; top: 5px; left: 5px; width: 40px; height: 40px; background: var(--accent); border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -202,117 +243,151 @@
     <div id="toast" class="copy-toast">Copied!</div>
 
     <script>
-        // --- NAVIGATION & UI ---
+        // --- GLOBAL ---
         function switchTool(toolId, navElement) {
             document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
             document.getElementById(toolId).classList.add('active');
             navElement.classList.add('active');
+            if(toolId === 'easing-vis') drawEasing();
         }
-
         function showToast(text) {
-            const toast = document.getElementById('toast');
-            toast.innerText = `${text} Copied!`;
-            toast.style.display = 'block';
-            void toast.offsetWidth; 
-            toast.style.opacity = '1';
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.style.display = 'none', 300); }, 2000);
+            const t = document.getElementById('toast'); t.innerText = `${text} Copied!`;
+            t.style.display = 'block'; void t.offsetWidth; t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.style.display = 'none', 300); }, 2000);
         }
 
         // --- TOOL 1: COLOR ---
-        function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),d=cmax-cmin,h=0,s=0,l=(cmax+cmin)/2;if(d==0)h=0;else if(cmax==r)h=((g-b)/d)%6;else if(cmax==g)h=(b-r)/d+2;else h=(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360;s=d==0?0:d/(1-Math.abs(2*l-1));return[h,+(s*100).toFixed(1),+(l*100).toFixed(1)];}
-        function hslToHex(h,s,l){s/=100;l/=100;let c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;if(0<=h&&h<60){r=c;g=x;b=0;}else if(60<=h&&h<120){r=x;g=c;b=0;}else if(120<=h&&h<180){r=0;g=c;b=x;}else if(180<=h&&h<240){r=0;g=x;b=c;}else if(240<=h&&h<300){r=x;g=0;b=c;}else if(300<=h&&h<360){r=c;g=0;b=x;}r=Math.round((r+m)*255).toString(16).padStart(2,'0');g=Math.round((g+m)*255).toString(16).padStart(2,'0');b=Math.round((b+m)*255).toString(16).padStart(2,'0');return `#${r}${g}${b}`;}
+        function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let cn=Math.min(r,g,b),cx=Math.max(r,g,b),d=cx-cn,h=0,s=0,l=(cx+cn)/2;if(d==0)h=0;else if(cx==r)h=((g-b)/d)%6;else if(cx==g)h=(b-r)/d+2;else h=(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360;s=d==0?0:d/(1-Math.abs(2*l-1));return[h,+(s*100).toFixed(1),+(l*100).toFixed(1)];}
+        function hslToHex(h,s,l){s/=100;l/=100;let c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;if(h<60){r=c;g=x;b=0;}else if(h<120){r=x;g=c;b=0;}else if(h<180){r=0;g=c;b=x;}else if(h<240){r=0;g=x;b=c;}else if(h<300){r=x;g=0;b=c;}else{r=c;g=0;b=x;}r=Math.round((r+m)*255).toString(16).padStart(2,'0');g=Math.round((g+m)*255).toString(16).padStart(2,'0');b=Math.round((b+m)*255).toString(16).padStart(2,'0');return `#${r}${g}${b}`;}
         function generatePalette() {
-            const hex = document.getElementById('hex-input').value;
-            if(!/^#[0-9A-F]{6}$/i.test(hex)) return;
-            const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
-            const [h, s, baseL] = rgbToHsl(r, g, b);
-            const weights = [{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:baseL},{w:600,l:Math.max(10,baseL-10)},{w:700,l:Math.max(10,baseL-20)},{w:800,l:Math.max(10,baseL-30)},{w:900,l:Math.max(5,baseL-40)}];
-            const c = document.getElementById('palette-output'); c.innerHTML = '';
-            weights.forEach(i => {
-                const hx = hslToHex(h, s, i.l);
-                const tc = i.l > 60 ? '#000' : '#fff';
-                const el = document.createElement('div'); el.className = 'color-swatch';
-                el.onclick = () => { navigator.clipboard.writeText(hx); showToast(hx.toUpperCase()); };
-                el.innerHTML = `<div class="color-fill" style="background-color:${hx};color:${tc}"><span style="font-weight:bold;">${i.w}</span></div><div class="color-info"><div class="color-hex">${hx.toUpperCase()}</div></div>`;
-                c.appendChild(el);
+            const hx = document.getElementById('hex-input').value; if(!/^#[0-9A-F]{6}$/i.test(hx)) return;
+            const r=parseInt(hx.slice(1,3),16), g=parseInt(hx.slice(3,5),16), b=parseInt(hx.slice(5,7),16);
+            const [h, s, bl] = rgbToHsl(r, g, b);
+            const w = [{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:bl},{w:600,l:Math.max(10,bl-10)},{w:700,l:Math.max(10,bl-20)},{w:800,l:Math.max(10,bl-30)},{w:900,l:Math.max(5,bl-40)}];
+            const cnt = document.getElementById('palette-output'); cnt.innerHTML = '';
+            w.forEach(i => {
+                const hex = hslToHex(h, s, i.l); const tc = i.l > 60 ? '#000' : '#fff';
+                const el = document.createElement('div'); el.className = 'color-swatch'; el.onclick = () => { navigator.clipboard.writeText(hex); showToast(hex.toUpperCase()); };
+                el.innerHTML = `<div class="color-fill" style="background-color:${hex};color:${tc}"><span style="font-weight:bold;">${i.w}</span></div><div class="color-info"><div class="color-hex">${hex.toUpperCase()}</div></div>`;
+                cnt.appendChild(el);
             });
         }
         document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value);
         document.getElementById('hex-input').addEventListener('input', (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('base-color').value = e.target.value; });
 
-        // --- TOOL 2 & 3: JSON & BASE64 ---
-        function formatJSON(s) {
-            const i=document.getElementById('json-input'), st=document.getElementById('json-status');
-            try { i.value = JSON.stringify(JSON.parse(i.value), null, s); st.innerHTML='<span style="color:var(--success)">Valid JSON!</span>'; } 
-            catch(e) { st.innerHTML=`<span style="color:var(--error)">Error: ${e.message}</span>`; }
-        }
+        // --- TOOL 2 & 3: JSON & B64 ---
+        function formatJSON(s) { const i=document.getElementById('json-input'), st=document.getElementById('json-status'); try { i.value = JSON.stringify(JSON.parse(i.value), null, s); st.innerHTML='<span style="color:var(--success)">Valid JSON!</span>'; } catch(e) { st.innerHTML=`<span style="color:var(--error)">Error: ${e.message}</span>`; } }
         function clearJSON() { document.getElementById('json-input').value=''; document.getElementById('json-status').innerHTML=''; }
-        function handleBase64(a) {
-            const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'), st=document.getElementById('b64-status');
-            try {
-                if(a==='encode'){ r.value=btoa(unescape(encodeURIComponent(t.value))); st.innerHTML='<span style="color:var(--success)">Encoded!</span>';}
-                else { t.value=decodeURIComponent(escape(atob(r.value))); st.innerHTML='<span style="color:var(--success)">Decoded!</span>'; }
-            } catch(e) { st.innerHTML=`<span style="color:var(--error)">Format Error!</span>`; }
-        }
+        function handleBase64(a) { const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'), st=document.getElementById('b64-status'); try { if(a==='encode'){ r.value=btoa(unescape(encodeURIComponent(t.value))); st.innerHTML='<span style="color:var(--success)">Encoded!</span>';} else { t.value=decodeURIComponent(escape(atob(r.value))); st.innerHTML='<span style="color:var(--success)">Decoded!</span>'; } } catch(e) { st.innerHTML=`<span style="color:var(--error)">Format Error!</span>`; } }
 
-        // --- TOOL 4: GACHA SIMULATOR ---
-        function calcGacha() {
-            const rate = parseFloat(document.getElementById('gacha-rate').value) / 100;
-            const pulls = parseInt(document.getElementById('gacha-pulls').value);
-            if(isNaN(rate) || isNaN(pulls) || pulls < 1) return;
-            
-            // Rumus probabilitas kumulatif: 1 - (Peluang Gagal ^ Jumlah Pull)
-            const prob = (1 - Math.pow(1 - rate, pulls)) * 100;
-            const resultBox = document.getElementById('gacha-result');
-            
-            let color = "var(--accent)";
-            if(prob < 30) color = "var(--error)";
-            else if(prob > 80) color = "var(--success)";
-            
-            resultBox.innerHTML = `Peluang mendapatkan minimal 1 item:<br><br> <span style="font-size: 2rem; color: ${color};">${prob.toFixed(2)}%</span>`;
-        }
+        // --- TOOL 4, 5, 6: SIMULATORS ---
+        function calcGacha() { const r = parseFloat(document.getElementById('gacha-rate').value)/100, p = parseInt(document.getElementById('gacha-pulls').value); if(isNaN(r)||isNaN(p)||p<1) return; const prob = (1-Math.pow(1-r,p))*100; document.getElementById('gacha-result').innerHTML = `Peluang mendapatkan minimal 1 item:<br><br> <span style="font-size: 2rem; color: ${prob<30?'var(--error)':prob>80?'var(--success)':'var(--accent)'};">${prob.toFixed(2)}%</span>`; }
+        function calcEconomy() { const b=parseFloat(document.getElementById('eco-base').value), m=parseFloat(document.getElementById('eco-multi').value), mx=parseInt(document.getElementById('eco-max').value), tb=document.querySelector('#eco-table tbody'); tb.innerHTML=''; for(let i=1;i<=mx;i++){ const v=b*Math.pow(m,i-1); tb.innerHTML+=`<tr><td>Lv ${i}</td><td><b>${Math.round(v).toLocaleString()}</b></td><td style="color:var(--text-muted)">${v.toFixed(2)}</td></tr>`; } }
+        function calcResource() { const p=parseFloat(document.getElementById('res-prod').value), c=parseFloat(document.getElementById('res-cons').value), pn=parseFloat(document.getElementById('res-penalty').value)/100; const tc=c+(c*pn), nm=p-tc; const col=nm>=0?'var(--success)':'var(--error)'; document.getElementById('res-result').innerHTML = `Status Produksi: <span style="color:${col}">${nm>=0?'Surplus':'Defisit'}</span><br><br>Total Konsumsi (Penalti): ${tc.toFixed(1)} / mnt<br>Netto per Menit: <span style="color:${col}">${nm>0?'+'+nm.toFixed(1):nm.toFixed(1)}</span><br>Netto per Jam: <span style="color:${col}">${nm*60>0?'+'+(nm*60).toFixed(1):(nm*60).toFixed(1)}</span>`; }
 
-        // --- TOOL 5: ECONOMY SCALER ---
-        function calcEconomy() {
-            const base = parseFloat(document.getElementById('eco-base').value);
-            const multi = parseFloat(document.getElementById('eco-multi').value);
-            const maxLvl = parseInt(document.getElementById('eco-max').value);
-            const tbody = document.querySelector('#eco-table tbody');
-            tbody.innerHTML = '';
-
-            for(let i = 1; i <= maxLvl; i++) {
-                const val = base * Math.pow(multi, i - 1);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>Lv ${i}</td><td><b>${Math.round(val).toLocaleString()}</b></td><td style="color:var(--text-muted); font-size:0.9rem;">${val.toFixed(2)}</td>`;
-                tbody.appendChild(tr);
+        // --- TOOL 7: DIMINISHING STATS ---
+        function calcDiminishing() {
+            const k = parseFloat(document.getElementById('dim-const').value);
+            const max = parseFloat(document.getElementById('dim-max').value);
+            const step = parseFloat(document.getElementById('dim-step').value);
+            const tb = document.querySelector('#dim-table tbody');
+            tb.innerHTML = '';
+            
+            for(let a = step; a <= max; a += step) {
+                const reduction = (a / (a + k)) * 100;
+                const damageTaken = 100 - reduction;
+                tb.innerHTML += `<tr>
+                    <td><b>${a}</b></td>
+                    <td style="color: var(--success)">${reduction.toFixed(2)}%</td>
+                    <td style="color: var(--error)">${damageTaken.toFixed(2)}%</td>
+                </tr>`;
             }
         }
 
-        // --- TOOL 6: RESOURCE TRACKER ---
-        function calcResource() {
-            const prod = parseFloat(document.getElementById('res-prod').value);
-            const consBase = parseFloat(document.getElementById('res-cons').value);
-            const penaltyPercent = parseFloat(document.getElementById('res-penalty').value) / 100;
+        // --- TOOL 8: SPRITE CALCULATOR ---
+        function calcSprite() {
+            const w = parseInt(document.getElementById('spr-w').value);
+            const h = parseInt(document.getElementById('spr-h').value);
+            const tw = parseInt(document.getElementById('spr-tw').value);
+            const th = parseInt(document.getElementById('spr-th').value);
             
-            const totalCons = consBase + (consBase * penaltyPercent);
-            const netPerMin = prod - totalCons;
-            const netPerHour = netPerMin * 60;
-
-            const resBox = document.getElementById('res-result');
-            const color = netPerMin >= 0 ? "var(--success)" : "var(--error)";
-            const status = netPerMin >= 0 ? "Surplus (Aman)" : "Defisit (Bahaya)";
-
-            resBox.innerHTML = `
-                Status Produksi: <span style="color: ${color}">${status}</span><br><br>
-                Total Konsumsi (setelah penalti): ${totalCons.toFixed(1)} / menit<br>
-                Netto per Menit: <span style="color: ${color}">${netPerMin > 0 ? '+'+netPerMin.toFixed(1) : netPerMin.toFixed(1)}</span><br>
-                Netto per Jam: <span style="color: ${color}">${netPerHour > 0 ? '+'+netPerHour.toFixed(1) : netPerHour.toFixed(1)}</span>
-            `;
+            if(!w || !h || !tw || !th) return;
+            const cols = w / tw;
+            const rows = h / th;
+            
+            let html = `Kolom (Horizontal): <span>${cols}</span><br>Baris (Vertikal): <span>${rows}</span><br>Total Frame: <span>${cols * rows}</span>`;
+            if(!Number.isInteger(cols) || !Number.isInteger(rows)) {
+                html += `<br><br><span style="color: var(--error); font-size:0.9rem;">Peringatan: Ada sisa pixel! Ukuran gambar tidak bisa dibagi rata dengan ukuran tile.</span>`;
+            }
+            document.getElementById('spr-result').innerHTML = html;
         }
 
-        // Initialize First Tool
-        window.onload = generatePalette;
+        // --- TOOL 9: EASING VISUALIZER ---
+        const easeFuncs = {
+            linear: t => t,
+            easeInQuad: t => t*t,
+            easeOutQuad: t => t*(2-t),
+            easeOutBounce: t => { const n=7.5625, d=2.75; if(t<1/d)return n*t*t; if(t<2/d)return n*(t-=1.5/d)*t+.75; if(t<2.5/d)return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375; },
+            easeOutElastic: t => { const c4=(2*Math.PI)/3; return t===0?0:t===1?1:Math.pow(2,-10*t)*Math.sin((t*10-0.75)*c4)+1; }
+        };
+
+        function drawEasing() {
+            const canvas = document.getElementById('ease-canvas');
+            if(!canvas.getContext) return;
+            const ctx = canvas.getContext('2d');
+            const type = document.getElementById('ease-type').value;
+            const fn = easeFuncs[type];
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Grid
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i=0; i<=10; i++) {
+                let x = i * (canvas.width/10); let y = i * (canvas.height/10);
+                ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+                ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+
+            // Draw Curve
+            ctx.strokeStyle = '#bb86fc'; ctx.lineWidth = 3;
+            ctx.beginPath();
+            for(let x=0; x<=canvas.width; x++) {
+                let t = x / canvas.width;
+                // mapping output 0-1 to canvas height (inverted Y)
+                let y = canvas.height - (fn(t) * (canvas.height - 40)) - 20; 
+                if(x===0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        let animId;
+        function animateEasing() {
+            cancelAnimationFrame(animId);
+            const ball = document.getElementById('ease-ball');
+            const type = document.getElementById('ease-type').value;
+            const fn = easeFuncs[type];
+            const duration = 1500; // 1.5 seconds
+            let start = null;
+            const maxTravel = ball.parentElement.offsetWidth - ball.offsetWidth - 10;
+
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                let progress = (timestamp - start) / duration;
+                if (progress > 1) progress = 1;
+                
+                let easeVal = fn(progress);
+                ball.style.transform = `translateX(${easeVal * maxTravel}px)`;
+                
+                if (progress < 1) animId = requestAnimationFrame(step);
+            }
+            animId = requestAnimationFrame(step);
+        }
+
+        // Init
+        window.onload = () => { generatePalette(); drawEasing(); };
     </script>
 </body>
 </html>
