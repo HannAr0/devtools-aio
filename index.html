@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools AIO</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent: #bb86fc;
+            --border: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        aside {
+            width: 250px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 10px 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .nav-links li {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--text-muted);
+        }
+
+        .nav-links li:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+        .nav-links li.active { background-color: rgba(187, 134, 252, 0.1); color: var(--accent); border-right: 3px solid var(--accent); }
+
+        /* Main Content Styles */
+        main {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .tool-section { display: none; animation: fadeIn 0.3s ease; }
+        .tool-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { margin-bottom: 20px; font-weight: 500; }
+
+        /* Color Generator Tool Styles */
+        .control-group {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.8; }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .color-swatch {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-swatch:hover { transform: translateY(-5px); }
+        .color-fill { height: 80px; width: 100%; display: flex; align-items: flex-end; padding: 10px; }
+        .color-info { background: var(--bg-panel); padding: 10px; text-align: center; font-size: 0.85rem; }
+        .color-weight { font-weight: bold; margin-bottom: 4px; }
+        .color-hex { color: var(--text-muted); font-family: monospace; }
+        .copy-toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--accent); color: #000;
+            padding: 10px 20px; border-radius: 4px;
+            font-weight: bold; display: none; opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="brand">DevTools AIO</div>
+        <ul class="nav-links" id="nav-links">
+            <li class="active" onclick="switchTool('color-generator', this)">Material Palette</li>
+            <li onclick="switchTool('json-formatter', this)">JSON Formatter</li>
+            <li onclick="switchTool('base64-tool', this)">Base64 Encode/Decode</li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Tool 1: Color Generator -->
+        <div id="color-generator" class="tool-section active">
+            <h2>Material Tonal Palette Generator</h2>
+            <div class="control-group">
+                <input type="color" id="base-color" value="#bb86fc">
+                <input type="text" id="hex-input" value="#bb86fc" maxlength="7">
+                <button onclick="generatePalette()">Generate Palette</button>
+            </div>
+            <div class="palette-grid" id="palette-output">
+                <!-- Swatches will be generated here -->
+            </div>
+        </div>
+
+        <!-- Tool 2: JSON Formatter (Placeholder) -->
+        <div id="json-formatter" class="tool-section">
+            <h2>JSON Formatter & Validator</h2>
+            <p style="color: var(--text-muted);">Area ini siap kamu isi dengan script JSON Formatter nantinya.</p>
+        </div>
+
+        <!-- Tool 3: Base64 (Placeholder) -->
+        <div id="base64-tool" class="tool-section">
+            <h2>Base64 Encoder / Decoder</h2>
+            <p style="color: var(--text-muted);">Area ini siap kamu isi dengan script Base64 nantinya.</p>
+        </div>
+    </main>
+
+    <div id="toast" class="copy-toast">Copied to clipboard!</div>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchTool(toolId, navElement) {
+            // Hide all tools
+            document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
+            // Remove active class from all navs
+            document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
+            
+            // Show selected tool
+            document.getElementById(toolId).classList.add('active');
+            navElement.classList.add('active');
+        }
+
+        // --- Color Palette Logic ---
+        const colorInput = document.getElementById('base-color');
+        const hexInput = document.getElementById('hex-input');
+
+        // Sync color picker and text input
+        colorInput.addEventListener('input', (e) => hexInput.value = e.target.value);
+        hexInput.addEventListener('input', (e) => {
+            if(/^#[0-9A-F]{6}$/i.test(e.target.value)) colorInput.value = e.target.value;
+        });
+
+        // Convert HEX to RGB
+        function hexToRgb(hex) {
+            let r = 0, g = 0, b = 0;
+            if (hex.length == 4) {
+                r = "0x" + hex[1] + hex[1];
+                g = "0x" + hex[2] + hex[2];
+                b = "0x" + hex[3] + hex[3];
+            } else if (hex.length == 7) {
+                r = "0x" + hex[1] + hex[2];
+                g = "0x" + hex[3] + hex[4];
+                b = "0x" + hex[5] + hex[6];
+            }
+            return [+r, +g, +b];
+        }
+
+        // Convert RGB to HSL
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin, h = 0, s = 0, l = 0;
+            if (delta == 0) h = 0;
+            else if (cmax == r) h = ((g - b) / delta) % 6;
+            else if (cmax == g) h = (b - r) / delta + 2;
+            else h = (r - g) / delta + 4;
+            h = Math.round(h * 60);
+            if (h < 0) h += 360;
+            l = (cmax + cmin) / 2;
+            s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+            s = +(s * 100).toFixed(1);
+            l = +(l * 100).toFixed(1);
+            return [h, s, l];
+        }
+
+        // Convert HSL to HEX
+        function hslToHex(h, s, l) {
+            s /= 100; l /= 100;
+            let c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c/2, r = 0, g = 0, b = 0;
+            if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+            else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+            else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+            else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+            else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+            else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+            r = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+            g = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+            b = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        // Generate the Material-like Palette
+        function generatePalette() {
+            const hex = hexInput.value;
+            if(!/^#[0-9A-F]{6}$/i.test(hex)) return alert("Invalid HEX Code!");
+            
+            const [r, g, b] = hexToRgb(hex);
+            const [h, s, baseL] = rgbToHsl(r, g, b);
+            
+            // Typical Material Design weights and their corresponding lightness values
+            const weights = [
+                { weight: 50, l: 95 },
+                { weight: 100, l: 90 },
+                { weight: 200, l: 80 },
+                { weight: 300, l: 70 },
+                { weight: 400, l: 60 },
+                { weight: 500, l: baseL }, // Base color roughly sits here depending on input
+                { weight: 600, l: Math.max(10, baseL - 10) },
+                { weight: 700, l: Math.max(10, baseL - 20) },
+                { weight: 800, l: Math.max(10, baseL - 30) },
+                { weight: 900, l: Math.max(5, baseL - 40) }
+            ];
+
+            const container = document.getElementById('palette-output');
+            container.innerHTML = '';
+
+            weights.forEach(item => {
+                const shadeHex = hslToHex(h, s, item.l);
+                const isLight = item.l > 60;
+                const textColor = isLight ? '#000' : '#fff';
+
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.onclick = () => copyToClipboard(shadeHex);
+                
+                swatch.innerHTML = `
+                    <div class="color-fill" style="background-color: ${shadeHex}; color: ${textColor}">
+                        <span style="font-weight: bold; font-size: 0.9rem;">${item.weight}</span>
+                    </div>
+                    <div class="color-info">
+                        <div class="color-hex">${shadeHex.toUpperCase()}</div>
+                    </div>
+                `;
+                container.appendChild(swatch);
+            });
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.innerText = `${text.toUpperCase()} Copied!`;
+                toast.style.display = 'block';
+                // Trigger reflow
+                void toast.offsetWidth;
+                toast.style.opacity = '1';
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.style.display = 'none', 300);
+                }, 2000);
+            });
+        }
+
+        // Initialize first palette on load
+        window.onload = generatePalette;
+    </script>
+</body>
+</html>
