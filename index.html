@@ -28,7 +28,6 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--md-bg); color: var(--md-on-bg); display: flex; height: 100vh; overflow: hidden; }
 
         /* Top App Bar (Mobile) */
@@ -36,37 +35,36 @@
         .menu-btn { background: none; border: none; fill: var(--md-on-bg); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-right: 8px; }
         .app-title { font-size: 1.25rem; font-weight: 500; }
 
-        /* Sidebar */
+        /* Sidebar - Flattened */
         aside { width: 280px; background-color: var(--md-surface-container); display: flex; flex-direction: column; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
         .brand { padding: 24px; font-size: 1.2rem; font-weight: bold; color: var(--md-primary); position: sticky; top: 0; background: var(--md-surface-container); z-index: 10; }
         .nav-links { list-style: none; padding: 12px; }
-        .nav-group { font-size: 0.8rem; color: var(--md-on-surface-variant); text-transform: uppercase; padding: 16px 16px 8px; font-weight: 600; opacity: 0.7; }
         .nav-links li { padding: 14px 16px; margin-bottom: 4px; cursor: pointer; border-radius: 100px; font-size: 0.95rem; font-weight: 500; }
         .nav-links li:hover { background-color: var(--md-surface-container-high); }
         .nav-links li.active { background-color: var(--md-secondary-container); color: var(--md-on-secondary-container); }
 
         .drawer-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; opacity: 0; transition: opacity 0.3s; }
 
-        /* Main */
+        /* Main Content */
         main { flex-grow: 1; padding: 32px; overflow-y: auto; position: relative; }
         .tool-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .tool-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         h2 { font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; color: var(--md-primary); }
 
-        /* UI Components */
+        /* Common UI */
         .control-group { background: var(--md-surface-container); padding: 24px; border-radius: 24px; margin-bottom: 24px; display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; min-width: 200px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; min-width: 150px; }
         .input-group label { font-size: 0.85rem; font-weight: 500; opacity: 0.8; }
-        
         input[type="text"], input[type="number"], textarea { padding: 16px; background: var(--md-surface); border: 1px solid var(--md-outline); color: var(--md-on-bg); border-radius: 12px; font-size: 1rem; font-family: monospace; width: 100%; }
         textarea { resize: vertical; min-height: 200px; }
         textarea:focus, input:focus { outline: none; border-color: var(--md-primary); border-width: 2px; padding: 15px; }
 
-        button { padding: 12px 24px; background-color: var(--md-surface-container-high); color: var(--md-on-bg); border: none; border-radius: 100px; cursor: pointer; font-weight: 500; min-height: 48px; }
+        button { padding: 12px 24px; background-color: var(--md-surface-container-high); color: var(--md-on-bg); border: none; border-radius: 100px; cursor: pointer; font-weight: 500; min-height: 48px; transition: all 0.2s;}
         button.primary { background-color: var(--md-primary); color: var(--md-on-primary); }
         button.danger { background-color: var(--md-error); color: #fff; }
         button:hover { filter: brightness(1.1); }
+        button.active { background-color: var(--md-primary-container); color: var(--md-on-primary-container); border: 2px solid var(--md-primary); padding: 10px 22px;}
 
         input[type="color"] { width: 48px; height: 48px; border: none; border-radius: 50%; cursor: pointer; background: none; padding: 0; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
@@ -80,13 +78,21 @@
         .two-col { display: flex; gap: 24px; flex-wrap: wrap; } 
         .col { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 100%; }
 
-        /* Canvas Tools (Pixel & Wireframer) */
+        /* ADVANCED PIXEL EDITOR STYLES */
+        .px-container { display: flex; flex-direction: column; height: calc(100vh - 150px); background: var(--md-surface-container); border-radius: 24px; overflow: hidden;}
+        .px-toolbar { display: flex; gap: 10px; padding: 16px; background: var(--md-surface-container-high); align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--md-outline);}
+        .px-toolbar .input-group { min-width: auto; flex-grow: 0; }
+        .px-toolbar input[type="number"] { width: 80px; padding: 8px; border-radius: 8px; min-height: 40px;}
+        .px-toolbar button { padding: 8px 16px; min-height: 40px; }
+        .px-divider { width: 2px; height: 30px; background: var(--md-outline); margin: 0 5px; opacity: 0.5;}
+        
+        .px-viewport { flex-grow: 1; position: relative; overflow: hidden; background-color: #2b2b2b; cursor: crosshair; touch-action: none; }
+        #pixel-canvas { position: absolute; top: 0; left: 0; transform-origin: 0 0; image-rendering: pixelated; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        
+        /* WIREFRAMER */
         .canvas-container { background: var(--md-surface-container); padding: 24px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; }
-        canvas { background-color: #fff; border: 1px solid var(--md-outline); border-radius: 4px; touch-action: none; max-width: 100%; }
-        #pixel-canvas { image-rendering: pixelated; width: 320px; }
-        #wire-canvas { width: 100%; height: 500px; cursor: grab; }
+        #wire-canvas { background-color: #fff; border: 1px solid var(--md-outline); border-radius: 4px; touch-action: none; max-width: 100%; width: 100%; height: 500px; cursor: grab; }
         #wire-canvas:active { cursor: grabbing; }
-        .canvas-toolbar { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; width: 100%; }
 
         .copy-toast { position: fixed; bottom: 24px; right: 24px; background: var(--md-on-bg); color: var(--md-bg); padding: 14px 24px; border-radius: 12px; font-weight: 500; display: none; opacity: 0; transition: opacity 0.3s; z-index: 999; }
 
@@ -100,6 +106,7 @@
             main { padding: 20px 16px; }
             h2 { font-size: 1.5rem; }
             .control-group { padding: 16px; border-radius: 20px; }
+            .px-container { height: 70vh; }
         }
     </style>
 </head>
@@ -116,19 +123,16 @@
     <!-- Drawer Overlay -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="toggleDrawer()"></div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar - Flattened -->
     <aside id="sidebar">
         <div class="brand">DevTools AIO</div>
         <ul class="nav-links" id="nav-links">
-            <div class="nav-group">App Utilities</div>
             <li class="active" onclick="switchTool('color-generator', this)">Material Palette</li>
             <li onclick="switchTool('json-formatter', this)">JSON Formatter</li>
             <li onclick="switchTool('base64-tool', this)">Base64 Encoder</li>
             <li onclick="switchTool('uuid-gen', this)">UUID Generator</li>
-            
-            <div class="nav-group">Game Assets & Data</div>
             <li onclick="switchTool('dialogue-json', this)">Dialogue to JSON</li>
-            <li onclick="switchTool('pixel-maker', this)">Simple Pixel Maker</li>
+            <li onclick="switchTool('pixel-maker', this)">Advanced Pixel Editor</li>
             <li onclick="switchTool('wireframer', this)">Mini Wireframer</li>
         </ul>
     </aside>
@@ -186,35 +190,47 @@
             </div>
         </div>
 
-        <!-- TOOL 6: PIXEL MAKER -->
+        <!-- TOOL 6: ADVANCED PIXEL EDITOR -->
         <div id="pixel-maker" class="tool-section">
-            <h2>Simple Pixel Maker</h2>
-            <div class="canvas-container">
-                <div class="canvas-toolbar">
-                    <input type="color" id="px-color" value="#000000">
-                    <button onclick="pxSetBrush()">Brush</button>
-                    <button onclick="pxSetEraser()">Eraser</button>
-                    <button onclick="pxClear()">Clear</button>
+            <h2>Advanced Pixel Editor (Aseprite Clone)</h2>
+            <p style="opacity: 0.8; margin-bottom: 16px; font-size: 0.9rem;">Navigasi: <b>Scroll Mouse</b> untuk Zoom, <b>Klik Tengah/2 Jari</b> untuk Geser/Pan.</p>
+            
+            <div class="px-container">
+                <div class="px-toolbar">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <input type="number" id="px-width" value="32" title="Width"> x 
+                        <input type="number" id="px-height" value="32" title="Height">
+                        <button onclick="pxApplyResolution()">Set Res</button>
+                    </div>
+                    <div class="px-divider"></div>
+                    <input type="color" id="px-color" value="#000000" title="Warna">
+                    <button class="px-tool active" id="tool-brush" onclick="pxSetTool('brush')">Brush</button>
+                    <button class="px-tool" id="tool-eraser" onclick="pxSetTool('eraser')">Eraser</button>
+                    <button class="px-tool" id="tool-fill" onclick="pxSetTool('fill')">Bucket</button>
+                    <button class="px-tool" id="tool-picker" onclick="pxSetTool('picker')">Picker</button>
+                    <div class="px-divider"></div>
+                    <button onclick="pxToggleGrid()" id="btn-grid">Grid: ON</button>
+                    <button onclick="pxClearCanvas()">Clear</button>
                     <button class="primary" onclick="pxExport()">Save PNG</button>
                 </div>
-                <canvas id="pixel-canvas" width="320" height="320"></canvas>
+                
+                <div class="px-viewport" id="px-viewport">
+                    <canvas id="pixel-canvas"></canvas>
+                </div>
             </div>
         </div>
 
         <!-- TOOL 7: MINI WIREFRAMER -->
         <div id="wireframer" class="tool-section">
             <h2>Mini Wireframer</h2>
-            <p style="opacity: 0.8; margin-bottom: 16px; font-size: 0.9rem;">Buat mockup UI cepat. Drag untuk memindahkan. Klik elemen untuk mengubah warnanya.</p>
             <div class="canvas-container">
-                <div class="canvas-toolbar">
-                    <button onclick="wireAddBox()">+ Kotak UI</button>
+                <div class="canvas-toolbar" style="display: flex; gap: 12px; margin-bottom: 20px;">
+                    <button onclick="wireAddBox()">+ Kotak</button>
                     <button onclick="wireAddText()">+ Teks</button>
-                    <div style="width: 2px; background: var(--md-outline); margin: 0 8px;"></div>
-                    <input type="color" id="wire-color" value="#bb86fc" onchange="wireChangeColor()" title="Ubah Warna Elemen Terpilih">
-                    <button class="danger" onclick="wireDeleteSelected()">Hapus Terpilih</button>
-                    <button onclick="wireClear()">Clear All</button>
+                    <input type="color" id="wire-color" value="#bb86fc" onchange="wireChangeColor()">
+                    <button class="danger" onclick="wireDeleteSelected()">Hapus</button>
+                    <button onclick="wireClear()">Clear</button>
                 </div>
-                <!-- Fixed resolution for logical rendering, scaled via CSS -->
                 <canvas id="wire-canvas" width="800" height="500"></canvas>
             </div>
         </div>
@@ -230,150 +246,380 @@
             document.querySelectorAll('.tool-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
             document.getElementById(toolId).classList.add('active'); navElement.classList.add('active');
-            if(toolId === 'pixel-maker') drawPxGrid();
-            if(toolId === 'wireframer') drawWire(); // Force redraw
+            if(toolId === 'pixel-maker') { requestAnimationFrame(pxRender); }
+            if(toolId === 'wireframer') drawWire();
             if(window.innerWidth <= 767) { document.getElementById('sidebar').classList.remove('open'); document.getElementById('drawer-overlay').classList.remove('active'); }
             window.scrollTo(0,0);
         }
         function showToast(text) { const t = document.getElementById('toast'); t.innerText = text; t.style.display = 'block'; void t.offsetWidth; t.style.opacity = '1'; setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.style.display = 'none', 300); }, 2000); }
 
-        // --- COLOR ---
+        // --- BASIC TOOLS (COLOR, JSON, B64, UUID, DIALOGUE) ---
         function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;let cn=Math.min(r,g,b),cx=Math.max(r,g,b),d=cx-cn,h=0,s=0,l=(cx+cn)/2;if(d==0)h=0;else if(cx==r)h=((g-b)/d)%6;else if(cx==g)h=(b-r)/d+2;else h=(r-g)/d+4;h=Math.round(h*60);if(h<0)h+=360;s=d==0?0:d/(1-Math.abs(2*l-1));return[h,+(s*100).toFixed(1),+(l*100).toFixed(1)];}
         function hslToHex(h,s,l){s/=100;l/=100;let c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;if(h<60){r=c;g=x;b=0;}else if(h<120){r=x;g=c;b=0;}else if(h<180){r=0;g=c;b=x;}else if(h<240){r=0;g=x;b=c;}else if(h<300){r=x;g=0;b=c;}else{r=c;g=0;b=x;}r=Math.round((r+m)*255).toString(16).padStart(2,'0');g=Math.round((g+m)*255).toString(16).padStart(2,'0');b=Math.round((b+m)*255).toString(16).padStart(2,'0');return `#${r}${g}${b}`;}
-        function generatePalette() {
-            const hx=document.getElementById('hex-input').value; if(!/^#[0-9A-F]{6}$/i.test(hx)) return;
-            const r=parseInt(hx.slice(1,3),16), g=parseInt(hx.slice(3,5),16), b=parseInt(hx.slice(5,7),16), [h, s] = rgbToHsl(r, g, b);
-            const w=[{w:10,l:99},{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:50},{w:600,l:40},{w:700,l:30},{w:800,l:20},{w:900,l:10}], cnt=document.getElementById('palette-output'); cnt.innerHTML='';
-            w.forEach(i => { const hex=hslToHex(h,s,i.l), tc=i.l>50?'#1A1C18':'#FFFFFF', el=document.createElement('div'); el.className='color-swatch'; el.onclick=()=>{navigator.clipboard.writeText(hex);showToast("Copied!");}; el.innerHTML=`<div class="color-fill" style="background-color:${hex};color:${tc}"><b>${i.w}</b></div><div class="color-info"><div>${hex.toUpperCase()}</div></div>`; cnt.appendChild(el); });
-        }
-        document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value.toUpperCase());
-        document.getElementById('hex-input').addEventListener('input', (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('base-color').value = e.target.value; });
-
-        // --- JSON, B64, UUID, DIALOGUE ---
+        function generatePalette() { const hx=document.getElementById('hex-input').value; if(!/^#[0-9A-F]{6}$/i.test(hx)) return; const r=parseInt(hx.slice(1,3),16), g=parseInt(hx.slice(3,5),16), b=parseInt(hx.slice(5,7),16), [h, s] = rgbToHsl(r, g, b); const w=[{w:10,l:99},{w:50,l:95},{w:100,l:90},{w:200,l:80},{w:300,l:70},{w:400,l:60},{w:500,l:50},{w:600,l:40},{w:700,l:30},{w:800,l:20},{w:900,l:10}], cnt=document.getElementById('palette-output'); cnt.innerHTML=''; w.forEach(i => { const hex=hslToHex(h,s,i.l), tc=i.l>50?'#1A1C18':'#FFFFFF', el=document.createElement('div'); el.className='color-swatch'; el.onclick=()=>{navigator.clipboard.writeText(hex);showToast("Copied!");}; el.innerHTML=`<div class="color-fill" style="background-color:${hex};color:${tc}"><b>${i.w}</b></div><div class="color-info"><div>${hex.toUpperCase()}</div></div>`; cnt.appendChild(el); }); }
+        document.getElementById('base-color').addEventListener('input', (e) => document.getElementById('hex-input').value = e.target.value.toUpperCase()); document.getElementById('hex-input').addEventListener('input', (e) => { if(/^#[0-9A-F]{6}$/i.test(e.target.value)) document.getElementById('base-color').value = e.target.value; });
         function formatJSON(s) { const i=document.getElementById('json-input'), st=document.getElementById('json-status'); try { if(!i.value)return; i.value=JSON.stringify(JSON.parse(i.value), null, s); st.innerHTML='<span style="color:var(--md-success)">Valid!</span>'; } catch(e) { st.innerHTML=`<span style="color:var(--md-error)">Error</span>`; } }
         function clearJSON() { document.getElementById('json-input').value=''; document.getElementById('json-status').innerHTML=''; }
         function handleBase64(a) { const t=document.getElementById('b64-text'), r=document.getElementById('b64-result'); try { if(a==='encode'&&t.value) r.value=btoa(unescape(encodeURIComponent(t.value))); else if(a==='decode'&&r.value) t.value=decodeURIComponent(escape(atob(r.value))); } catch(e){} }
         function generateUUIDs() { const c=parseInt(document.getElementById('uuid-count').value)||1; let res=[]; for(let i=0;i<c;i++){ res.push('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{let r=Math.random()*16|0; return (c=='x'?r:(r&0x3|0x8)).toString(16);})); } document.getElementById('uuid-output').value=res.join('\n'); showToast("UUID Generated!"); }
         function convertDialogue() { const l=document.getElementById('dlg-input').value.split('\n'); let j=[]; l.forEach(line=>{if(line.trim()==='')return; const p=line.split(':'); if(p.length>=2)j.push({char:p[0].trim(), text:p.slice(1).join(':').trim()}); else j.push({char:"?", text:line.trim()});}); document.getElementById('dlg-output').value=JSON.stringify(j,null,2); }
 
-        // --- PIXEL MAKER ---
-        const pxCv=document.getElementById('pixel-canvas'), pxCtx=pxCv.getContext('2d'), pxData=new Array(1024).fill(null);
-        let pxDraw=false, pxEraser=false;
-        function drawPxGrid() { pxCtx.clearRect(0,0,320,320); pxCtx.strokeStyle='rgba(128,128,128,0.2)'; pxCtx.lineWidth=1; for(let i=0;i<=32;i++){ pxCtx.beginPath(); pxCtx.moveTo(i*10,0); pxCtx.lineTo(i*10,320); pxCtx.stroke(); pxCtx.beginPath(); pxCtx.moveTo(0,i*10); pxCtx.lineTo(320,i*10); pxCtx.stroke(); } pxData.forEach((c,i)=>{if(c){pxCtx.fillStyle=c; pxCtx.fillRect((i%32)*10,Math.floor(i/32)*10,10,10);}}); }
-        function paintPx(e) { if(!pxDraw)return; const r=pxCv.getBoundingClientRect(), c=e.touches?e.touches[0]:e, x=Math.floor(((c.clientX-r.left)*(320/r.width))/10), y=Math.floor(((c.clientY-r.top)*(320/r.height))/10); if(x>=0&&x<32&&y>=0&&y<32){ pxData[y*32+x]=pxEraser?null:document.getElementById('px-color').value; drawPxGrid(); } }
-        pxCv.addEventListener('mousedown',(e)=>{pxDraw=true;paintPx(e);}); pxCv.addEventListener('mousemove',paintPx); pxCv.addEventListener('mouseup',()=>{pxDraw=false;}); pxCv.addEventListener('mouseleave',()=>{pxDraw=false;});
-        pxCv.addEventListener('touchstart',(e)=>{e.preventDefault();pxDraw=true;paintPx(e);},{passive:false}); pxCv.addEventListener('touchmove',(e)=>{e.preventDefault();paintPx(e);},{passive:false}); pxCv.addEventListener('touchend',()=>{pxDraw=false;});
-        function pxSetBrush(){pxEraser=false;pxCv.style.cursor='crosshair';} function pxSetEraser(){pxEraser=true;pxCv.style.cursor='cell';} function pxClear(){pxData.fill(null);drawPxGrid();}
-        function pxExport(){ const cv=document.createElement('canvas'); cv.width=32; cv.height=32; const ctx=cv.getContext('2d'); pxData.forEach((c,i)=>{if(c){ctx.fillStyle=c;ctx.fillRect(i%32,Math.floor(i/32),1,1);}}); const a=document.createElement('a'); a.download='sprite.png'; a.href=cv.toDataURL(); a.click(); }
+        // --- ADVANCED PIXEL EDITOR (ASEPRITE CLONE ENGINE) ---
+        const vp = document.getElementById('px-viewport');
+        const cv = document.getElementById('pixel-canvas');
+        const ctx = cv.getContext('2d');
+        
+        // Offscreen Data Canvas
+        const dataCv = document.createElement('canvas');
+        const dataCtx = dataCv.getContext('2d', { willReadFrequently: true });
+
+        // Editor State
+        let pxRes = { w: 32, h: 32 };
+        let pxScale = 15; // Zoom level
+        let pxPan = { x: 0, y: 0 };
+        let pxActiveTool = 'brush'; // brush, eraser, fill, picker
+        let pxShowGrid = true;
+        
+        // Input State
+        let isPxDrawing = false;
+        let isPxPanning = false;
+        let lastPanPt = { x: 0, y: 0 };
+        let lastDrawPt = null;
+
+        function pxInit() {
+            cv.width = vp.clientWidth;
+            cv.height = vp.clientHeight;
+            dataCv.width = pxRes.w;
+            dataCv.height = pxRes.h;
+            
+            // Center canvas on init
+            pxPan.x = (cv.width - (pxRes.w * pxScale)) / 2;
+            pxPan.y = (cv.height - (pxRes.h * pxScale)) / 2;
+            
+            pxRender();
+        }
+
+        function pxApplyResolution() {
+            const w = parseInt(document.getElementById('px-width').value);
+            const h = parseInt(document.getElementById('px-height').value);
+            if(w > 0 && h > 0 && w <= 2000 && h <= 2000) {
+                if(w * h > 250000) alert("Peringatan: Resolusi besar mungkin membuat browser agak berat saat Flood Fill.");
+                
+                // Save old data
+                const oldData = dataCtx.getImageData(0,0, dataCv.width, dataCv.height);
+                pxRes.w = w; pxRes.h = h;
+                dataCv.width = w; dataCv.height = h;
+                dataCtx.putImageData(oldData, 0, 0); // Restore old drawing to new canvas
+                
+                // Reset Pan/Scale to fit
+                pxScale = Math.min((vp.clientWidth - 40) / w, (vp.clientHeight - 40) / h);
+                if(pxScale < 1) pxScale = 1;
+                pxPan.x = (vp.clientWidth - (w * pxScale)) / 2;
+                pxPan.y = (vp.clientHeight - (h * pxScale)) / 2;
+                
+                pxRender();
+                showToast(`Resolusi diubah ke ${w}x${h}`);
+            } else {
+                alert("Resolusi harus antara 1x1 hingga 2000x2000");
+            }
+        }
+
+        function pxSetTool(tool) {
+            pxActiveTool = tool;
+            document.querySelectorAll('.px-tool').forEach(el => el.classList.remove('active'));
+            document.getElementById('tool-' + tool).classList.add('active');
+            if(tool === 'picker') cv.style.cursor = 'help';
+            else if(tool === 'fill') cv.style.cursor = 'cell';
+            else cv.style.cursor = 'crosshair';
+        }
+
+        function pxToggleGrid() {
+            pxShowGrid = !pxShowGrid;
+            document.getElementById('btn-grid').innerText = pxShowGrid ? "Grid: ON" : "Grid: OFF";
+            pxRender();
+        }
+
+        function pxClearCanvas() {
+            dataCtx.clearRect(0, 0, pxRes.w, pxRes.h);
+            pxRender();
+        }
+
+        // --- Core Rendering Loop ---
+        function pxRender() {
+            // Match display canvas to viewport size dynamically
+            if(cv.width !== vp.clientWidth || cv.height !== vp.clientHeight) {
+                cv.width = vp.clientWidth;
+                cv.height = vp.clientHeight;
+            }
+
+            ctx.clearRect(0, 0, cv.width, cv.height);
+            
+            // Draw checkerboard background for transparency
+            const chkSize = 10;
+            ctx.fillStyle = '#1e1e1e';
+            ctx.fillRect(pxPan.x, pxPan.y, pxRes.w * pxScale, pxRes.h * pxScale);
+            ctx.fillStyle = '#2a2a2a';
+            for(let y=0; y < pxRes.h * pxScale; y += chkSize) {
+                for(let x=0; x < pxRes.w * pxScale; x += chkSize) {
+                    if(((x/chkSize) + (y/chkSize)) % 2 === 0) {
+                        ctx.fillRect(pxPan.x + x, pxPan.y + y, chkSize, chkSize);
+                    }
+                }
+            }
+
+            // Draw Pixel Data
+            ctx.save();
+            ctx.translate(pxPan.x, pxPan.y);
+            ctx.scale(pxScale, pxScale);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(dataCv, 0, 0);
+            ctx.restore();
+
+            // Draw Grid (if enabled and zoomed in enough)
+            if(pxShowGrid && pxScale >= 4) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for(let x = 0; x <= pxRes.w; x++) {
+                    ctx.moveTo(pxPan.x + (x * pxScale), pxPan.y);
+                    ctx.lineTo(pxPan.x + (x * pxScale), pxPan.y + (pxRes.h * pxScale));
+                }
+                for(let y = 0; y <= pxRes.h; y++) {
+                    ctx.moveTo(pxPan.x, pxPan.y + (y * pxScale));
+                    ctx.lineTo(pxPan.x + (pxRes.w * pxScale), pxPan.y + (y * pxScale));
+                }
+                ctx.stroke();
+            }
+        }
+
+        // --- Interaction Math ---
+        function getPixelCoords(clientX, clientY) {
+            const rect = cv.getBoundingClientRect();
+            const x = Math.floor((clientX - rect.left - pxPan.x) / pxScale);
+            const y = Math.floor((clientY - rect.top - pxPan.y) / pxScale);
+            return { x, y };
+        }
+
+        // --- Drawing Logic ---
+        function applyTool(clientX, clientY) {
+            const pt = getPixelCoords(clientX, clientY);
+            if(pt.x < 0 || pt.x >= pxRes.w || pt.y < 0 || pt.y >= pxRes.h) return;
+
+            if(pxActiveTool === 'brush' || pxActiveTool === 'eraser') {
+                // Bresenham's line algorithm for smooth fast drawing
+                if(lastDrawPt && (lastDrawPt.x !== pt.x || lastDrawPt.y !== pt.y)) {
+                    drawLine(lastDrawPt.x, lastDrawPt.y, pt.x, pt.y);
+                } else {
+                    drawDot(pt.x, pt.y);
+                }
+                lastDrawPt = pt;
+                pxRender();
+            } 
+            else if (pxActiveTool === 'fill') {
+                floodFill(pt.x, pt.y);
+                pxRender();
+            }
+            else if (pxActiveTool === 'picker') {
+                const pixel = dataCtx.getImageData(pt.x, pt.y, 1, 1).data;
+                if(pixel[3] > 0) { // Not transparent
+                    const hex = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
+                    document.getElementById('px-color').value = hex;
+                    pxSetTool('brush');
+                }
+            }
+        }
+
+        function drawDot(x, y) {
+            if(pxActiveTool === 'eraser') {
+                dataCtx.clearRect(x, y, 1, 1);
+            } else {
+                dataCtx.fillStyle = document.getElementById('px-color').value;
+                dataCtx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        function drawLine(x0, y0, x1, y1) {
+            let dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+            let dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+            let err = dx + dy, e2;
+            while (true) {
+                drawDot(x0, y0);
+                if (x0 === x1 && y0 === y1) break;
+                e2 = 2 * err;
+                if (e2 >= dy) { err += dy; x0 += sx; }
+                if (e2 <= dx) { err += dx; y0 += sy; }
+            }
+        }
+
+        // Non-recursive Flood Fill (Prevents Stack Overflow on 1000x1000)
+        function floodFill(startX, startY) {
+            const imgData = dataCtx.getImageData(0, 0, pxRes.w, pxRes.h);
+            const data = imgData.data;
+            const targetColor = getPixelColor(data, startX, startY, pxRes.w);
+            const fillColor = hexToRgba(document.getElementById('px-color').value);
+            
+            // If clicking on same color, abort
+            if(colorsMatch(targetColor, fillColor)) return;
+
+            const q = [[startX, startY]];
+            while(q.length > 0) {
+                let [x, y] = q.pop();
+                let idx = (y * pxRes.w + x) * 4;
+                
+                while(y >= 0 && colorsMatch(getPixelColor(data, x, y, pxRes.w), targetColor)) {
+                    y--;
+                }
+                y++;
+                
+                let spanLeft = false, spanRight = false;
+                while(y < pxRes.h && colorsMatch(getPixelColor(data, x, y, pxRes.w), targetColor)) {
+                    setPixelColor(data, x, y, pxRes.w, fillColor);
+                    
+                    if(x > 0) {
+                        if(colorsMatch(getPixelColor(data, x-1, y, pxRes.w), targetColor)) {
+                            if(!spanLeft) { q.push([x-1, y]); spanLeft = true; }
+                        } else spanLeft = false;
+                    }
+                    if(x < pxRes.w - 1) {
+                        if(colorsMatch(getPixelColor(data, x+1, y, pxRes.w), targetColor)) {
+                            if(!spanRight) { q.push([x+1, y]); spanRight = true; }
+                        } else spanRight = false;
+                    }
+                    y++;
+                }
+            }
+            dataCtx.putImageData(imgData, 0, 0);
+        }
+
+        function getPixelColor(data, x, y, w) {
+            const i = (y * w + x) * 4;
+            return [data[i], data[i+1], data[i+2], data[i+3]];
+        }
+        function setPixelColor(data, x, y, w, color) {
+            const i = (y * w + x) * 4;
+            data[i] = color[0]; data[i+1] = color[1]; data[i+2] = color[2]; data[i+3] = color[3];
+        }
+        function colorsMatch(c1, c2) { return c1[0]===c2[0] && c1[1]===c2[1] && c1[2]===c2[2] && c1[3]===c2[3]; }
+        function rgbToHex(r, g, b) { return (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1); }
+        function hexToRgba(hex) {
+            let r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+            return [r, g, b, 255]; // fully opaque
+        }
+
+        // --- Mouse & Touch Events ---
+        vp.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = 1.2;
+            const dir = e.deltaY > 0 ? -1 : 1;
+            const newScale = dir > 0 ? pxScale * zoomFactor : pxScale / zoomFactor;
+            
+            // Limit zoom
+            if(newScale < 0.5 || newScale > 100) return;
+
+            // Zoom pointing to mouse cursor
+            const rect = cv.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            pxPan.x = mouseX - (mouseX - pxPan.x) * (newScale / pxScale);
+            pxPan.y = mouseY - (mouseY - pxPan.y) * (newScale / pxScale);
+            pxScale = newScale;
+            pxRender();
+        });
+
+        vp.addEventListener('mousedown', (e) => {
+            if(e.button === 1 || e.buttons === 4 || e.altKey) { // Middle click or Alt+Click for Panning
+                isPxPanning = true;
+                lastPanPt = { x: e.clientX, y: e.clientY };
+                cv.style.cursor = 'grabbing';
+            } else if (e.button === 0) { // Left click
+                isPxDrawing = true;
+                lastDrawPt = null;
+                applyTool(e.clientX, e.clientY);
+            }
+        });
+
+        vp.addEventListener('mousemove', (e) => {
+            if(isPxPanning) {
+                pxPan.x += e.clientX - lastPanPt.x;
+                pxPan.y += e.clientY - lastPanPt.y;
+                lastPanPt = { x: e.clientX, y: e.clientY };
+                pxRender();
+            } else if (isPxDrawing) {
+                applyTool(e.clientX, e.clientY);
+            }
+        });
+
+        window.addEventListener('mouseup', () => { 
+            isPxDrawing = false; 
+            isPxPanning = false; 
+            lastDrawPt = null;
+            if(pxActiveTool === 'picker') cv.style.cursor = 'help';
+            else if(pxActiveTool === 'fill') cv.style.cursor = 'cell';
+            else cv.style.cursor = 'crosshair';
+        });
+
+        // Touch support (Mobile)
+        vp.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Stop scrolling
+            if(e.touches.length === 2) {
+                // Prepare for pinch/pan (simplified: just panning)
+                isPxPanning = true;
+                isPxDrawing = false;
+                lastPanPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            } else if(e.touches.length === 1) {
+                isPxDrawing = true;
+                lastDrawPt = null;
+                applyTool(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, {passive: false});
+
+        vp.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if(isPxPanning && e.touches.length >= 1) {
+                pxPan.x += e.touches[0].clientX - lastPanPt.x;
+                pxPan.y += e.touches[0].clientY - lastPanPt.y;
+                lastPanPt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                pxRender();
+            } else if (isPxDrawing && e.touches.length === 1) {
+                applyTool(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, {passive: false});
+
+        window.addEventListener('touchend', () => { isPxDrawing = false; isPxPanning = false; lastDrawPt = null; });
+
+        function pxExport() {
+            const link = document.createElement('a');
+            link.download = `pixel_${pxRes.w}x${pxRes.h}.png`;
+            link.href = dataCv.toDataURL('image/png');
+            link.click();
+            showToast("Berhasil disimpan!");
+        }
+        
+        window.addEventListener('resize', () => {
+            if(document.getElementById('pixel-maker').classList.contains('active')) pxRender();
+        });
+
 
         // --- MINI WIREFRAMER ---
         const wCv = document.getElementById('wire-canvas'), wCtx = wCv.getContext('2d');
         let shapes = [], selectedShape = null, isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
-
-        function drawWire() {
-            wCtx.clearRect(0, 0, wCv.width, wCv.height);
-            // Draw grid dots
-            wCtx.fillStyle = '#ccc';
-            for(let x=0; x<wCv.width; x+=20) for(let y=0; y<wCv.height; y+=20) wCtx.fillRect(x,y,2,2);
-            
-            // Draw shapes
-            shapes.forEach(s => {
-                if(s.type === 'rect') {
-                    wCtx.fillStyle = s.color;
-                    wCtx.fillRect(s.x, s.y, s.w, s.h);
-                    wCtx.strokeStyle = '#333';
-                    wCtx.lineWidth = 2;
-                    wCtx.strokeRect(s.x, s.y, s.w, s.h);
-                } else if (s.type === 'text') {
-                    wCtx.font = "24px sans-serif";
-                    wCtx.fillStyle = s.color;
-                    wCtx.fillText(s.text, s.x, s.y + 24); // y is baseline approx
-                }
-                
-                // Draw selection highlight
-                if(s === selectedShape) {
-                    wCtx.strokeStyle = '#bb86fc'; wCtx.lineWidth = 3;
-                    if(s.type === 'rect') wCtx.strokeRect(s.x-2, s.y-2, s.w+4, s.h+4);
-                    else if(s.type === 'text') {
-                        let tw = wCtx.measureText(s.text).width;
-                        wCtx.strokeRect(s.x-4, s.y-4, tw+8, 32);
-                    }
-                }
-            });
-        }
-
-        // Logic to get scaled mouse/touch pos
-        function getWPos(e) {
-            const rect = wCv.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: (clientX - rect.left) * (wCv.width / rect.width),
-                y: (clientY - rect.top) * (wCv.height / rect.height)
-            };
-        }
-
-        // Hit detection
-        function getShapeAt(x, y) {
-            // Reverse loop to pick top-most shape
-            for(let i = shapes.length - 1; i >= 0; i--) {
-                let s = shapes[i];
-                if(s.type === 'rect') {
-                    if(x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) return s;
-                } else if(s.type === 'text') {
-                    wCtx.font = "24px sans-serif";
-                    let tw = wCtx.measureText(s.text).width;
-                    if(x >= s.x && x <= s.x + tw && y >= s.y && y <= s.y + 24) return s;
-                }
-            }
-            return null;
-        }
-
-        function wireDown(e) {
-            const pos = getWPos(e);
-            selectedShape = getShapeAt(pos.x, pos.y);
-            if(selectedShape) {
-                isDragging = true;
-                dragOffsetX = pos.x - selectedShape.x;
-                dragOffsetY = pos.y - selectedShape.y;
-                document.getElementById('wire-color').value = selectedShape.color; // Sync color picker
-                // Move to top
-                shapes = shapes.filter(s => s !== selectedShape);
-                shapes.push(selectedShape);
-            }
-            drawWire();
-        }
-
-        function wireMove(e) {
-            if(!isDragging || !selectedShape) return;
-            e.preventDefault(); // Stop scrolling on touch
-            const pos = getWPos(e);
-            selectedShape.x = pos.x - dragOffsetX;
-            selectedShape.y = pos.y - dragOffsetY;
-            drawWire();
-        }
-
+        function drawWire() { wCtx.clearRect(0, 0, wCv.width, wCv.height); wCtx.fillStyle = '#ccc'; for(let x=0; x<wCv.width; x+=20) for(let y=0; y<wCv.height; y+=20) wCtx.fillRect(x,y,2,2); shapes.forEach(s => { if(s.type === 'rect') { wCtx.fillStyle = s.color; wCtx.fillRect(s.x, s.y, s.w, s.h); wCtx.strokeStyle = '#333'; wCtx.lineWidth = 2; wCtx.strokeRect(s.x, s.y, s.w, s.h); } else if (s.type === 'text') { wCtx.font = "24px sans-serif"; wCtx.fillStyle = s.color; wCtx.fillText(s.text, s.x, s.y + 24); } if(s === selectedShape) { wCtx.strokeStyle = '#bb86fc'; wCtx.lineWidth = 3; if(s.type === 'rect') wCtx.strokeRect(s.x-2, s.y-2, s.w+4, s.h+4); else if(s.type === 'text') { let tw = wCtx.measureText(s.text).width; wCtx.strokeRect(s.x-4, s.y-4, tw+8, 32); } } }); }
+        function getWPos(e) { const rect = wCv.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: (clientX - rect.left) * (wCv.width / rect.width), y: (clientY - rect.top) * (wCv.height / rect.height) }; }
+        function getShapeAt(x, y) { for(let i = shapes.length - 1; i >= 0; i--) { let s = shapes[i]; if(s.type === 'rect') { if(x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) return s; } else if(s.type === 'text') { wCtx.font = "24px sans-serif"; let tw = wCtx.measureText(s.text).width; if(x >= s.x && x <= s.x + tw && y >= s.y && y <= s.y + 24) return s; } } return null; }
+        function wireDown(e) { const pos = getWPos(e); selectedShape = getShapeAt(pos.x, pos.y); if(selectedShape) { isDragging = true; dragOffsetX = pos.x - selectedShape.x; dragOffsetY = pos.y - selectedShape.y; document.getElementById('wire-color').value = selectedShape.color; shapes = shapes.filter(s => s !== selectedShape); shapes.push(selectedShape); } drawWire(); }
+        function wireMove(e) { if(!isDragging || !selectedShape) return; e.preventDefault(); const pos = getWPos(e); selectedShape.x = pos.x - dragOffsetX; selectedShape.y = pos.y - dragOffsetY; drawWire(); }
         function wireUp() { isDragging = false; }
-
-        wCv.addEventListener('mousedown', wireDown);
-        wCv.addEventListener('mousemove', wireMove);
-        window.addEventListener('mouseup', wireUp); // Window level to catch fast drags outside
-
-        wCv.addEventListener('touchstart', (e)=>{ e.preventDefault(); wireDown(e); }, {passive:false});
-        wCv.addEventListener('touchmove', wireMove, {passive:false});
-        window.addEventListener('touchend', wireUp);
-
+        wCv.addEventListener('mousedown', wireDown); wCv.addEventListener('mousemove', wireMove); window.addEventListener('mouseup', wireUp);
+        wCv.addEventListener('touchstart', (e)=>{ e.preventDefault(); wireDown(e); }, {passive:false}); wCv.addEventListener('touchmove', wireMove, {passive:false}); window.addEventListener('touchend', wireUp);
         function wireAddBox() { shapes.push({ type: 'rect', x: 50, y: 50, w: 150, h: 80, color: '#E1E4D9' }); selectedShape = shapes[shapes.length-1]; drawWire(); }
-        function wireAddText() { 
-            let t = prompt("Masukkan Teks:"); 
-            if(t) { shapes.push({ type: 'text', x: 50, y: 50, text: t, color: '#1A1C18' }); selectedShape = shapes[shapes.length-1]; drawWire(); } 
-        }
+        function wireAddText() { let t = prompt("Masukkan Teks:"); if(t) { shapes.push({ type: 'text', x: 50, y: 50, text: t, color: '#1A1C18' }); selectedShape = shapes[shapes.length-1]; drawWire(); } }
         function wireChangeColor() { if(selectedShape) { selectedShape.color = document.getElementById('wire-color').value; drawWire(); } }
         function wireDeleteSelected() { if(selectedShape) { shapes = shapes.filter(s => s !== selectedShape); selectedShape = null; drawWire(); } }
         function wireClear() { shapes = []; selectedShape = null; drawWire(); }
 
-        // --- INIT ---
-        window.onload = () => { generatePalette(); drawPxGrid(); drawWire(); };
+        // --- INIT ALL ---
+        window.onload = () => { generatePalette(); pxInit(); drawWire(); };
     </script>
 </body>
 </html>
